@@ -10,6 +10,7 @@ import io.ktor.client.request.headers
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.example.currencyapptest.BuildKonfig
+import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
 private const val TIME_OUT = 15000L
@@ -36,11 +37,18 @@ val ktorModule = module {
             }
         }
     }
+}
 
+val appModule = module {
     single<CurrencyApiService> {
         CurrencyApiServiceImpl(
             client = get()
         )
     }
+}
 
+fun initializeKoin() {
+    startKoin {
+        modules(appModule, ktorModule)
+    }
 }
