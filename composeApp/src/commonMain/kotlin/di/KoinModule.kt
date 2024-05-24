@@ -12,11 +12,12 @@ import kotlinx.serialization.json.Json
 import org.example.currencyapptest.BuildKonfig
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
+import presentation.screen.HomeViewModel
 
 private const val TIME_OUT = 15000L
 private const val API_KEY = "apikey"
 
-val ktorModule = module {
+val appModule = module {
 
     single {
         HttpClient {
@@ -37,18 +38,21 @@ val ktorModule = module {
             }
         }
     }
-}
 
-val appModule = module {
     single<CurrencyApiService> {
         CurrencyApiServiceImpl(
             client = get()
+        )
+    }
+    factory {
+        HomeViewModel(
+            service = get()
         )
     }
 }
 
 fun initializeKoin() {
     startKoin {
-        modules(appModule, ktorModule)
+        modules(appModule)
     }
 }

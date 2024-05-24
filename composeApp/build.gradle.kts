@@ -92,7 +92,7 @@ buildkonfig {
         buildConfigField(
             FieldSpec.Type.STRING,
             "CURRENCY_API_KEY",
-            "\"${properties.getProperty("CURRENCY_API_KEY")}\""
+            properties.getProperty("CURRENCY_API_KEY")
         )
     }
 
@@ -105,10 +105,18 @@ buildkonfig {
 //    }
     targetConfigs {
         create("android") {
-            buildConfigField(FieldSpec.Type.STRING, "CURRENCY_API_KEY", "\"${properties.getProperty("CURRENCY_API_KEY")}\"")
+            buildConfigField(
+                FieldSpec.Type.STRING,
+                "CURRENCY_API_KEY",
+                properties.getProperty("CURRENCY_API_KEY")
+            )
         }
         create("ios") {
-            buildConfigField(FieldSpec.Type.STRING, "CURRENCY_API_KEY", "\"${properties.getProperty("CURRENCY_API_KEY")}\"")
+            buildConfigField(
+                FieldSpec.Type.STRING,
+                "CURRENCY_API_KEY",
+                properties.getProperty("CURRENCY_API_KEY")
+            )
         }
     }
 }
