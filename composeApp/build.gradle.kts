@@ -18,7 +18,6 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.realm.plugin)
     alias(libs.plugins.build.konfig)
-
 }
 
 kotlin {
@@ -48,6 +47,9 @@ kotlin {
             implementation(libs.androidx.activity.compose)
 
             implementation(libs.ktor.client.android)
+
+            implementation(libs.koin.android)
+            implementation(libs.koin.androidx.compose)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -56,12 +58,6 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-
-            implementation(libs.koin.core)
-            implementation(libs.voyager.navigator)
-            implementation(libs.voyager.screen.model)
-            implementation(libs.voyager.transitions)
-            implementation(libs.voyager.koin)
 
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
@@ -75,8 +71,17 @@ kotlin {
             implementation(libs.mongodb.realm)
             implementation(libs.kotlin.coroutines)
             implementation(libs.stately.common)
+
+            api(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.lifecycle.viewmodel)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.navigation.compose)
+
         }
         iosMain.dependencies {
+            implementation(compose.runtime)
+            implementation(compose.foundation)
             implementation(libs.ktor.client.darwin)
         }
     }
