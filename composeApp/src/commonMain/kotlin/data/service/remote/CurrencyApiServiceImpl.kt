@@ -1,9 +1,10 @@
-package data.remote
+package data.service.remote
 
-import domain.model.ApiResponse
-import domain.model.CurrencyCode
+import data.model.ApiResponse
+import domain.mapper.ServiceResponseMapper
+import domain.model.DataResponse
 import domain.model.RequestState
-import domain.remote.CurrencyApiService
+import domain.service.remote.CurrencyApiService
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -11,10 +12,11 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.serialization.json.Json
 
 class CurrencyApiServiceImpl(
-    private val client: HttpClient
+    private val client: HttpClient,
+    private val responseMapper: ServiceResponseMapper
 ) : CurrencyApiService {
 
-    override suspend fun getLatestExchangeRates(): RequestState<ApiResponse> {
+    override suspend fun getLatestExchangeRates(): RequestState<DataResponse> {
         return try {
             val request = client.get(ENDPOINT)
             if (request.status == HttpStatusCode.OK) {
@@ -33,7 +35,7 @@ class CurrencyApiServiceImpl(
 //                        availableCurrencyCodes.contains(currency.code)
 //                    }
 
-                RequestState.Success(data = apiResponse)
+                RequestState.Success(data = responseMapper.mapApiToData(apiResponse))
             } else {
                 RequestState.Error(message = "Error: ${request.status}")
             }

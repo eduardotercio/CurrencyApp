@@ -3,8 +3,7 @@ package domain.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ApiResponse(
+data class DataResponse(
     val meta: MetaData,
-    val data: Map<String, Currency>
+    val data: List<Currency>
 )
-

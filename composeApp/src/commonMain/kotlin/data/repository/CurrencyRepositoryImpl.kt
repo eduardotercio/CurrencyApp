@@ -1,10 +1,10 @@
 package data.repository
 
-import domain.local.PreferencesService
-import domain.model.ApiResponse
+import domain.model.DataResponse
 import domain.model.RequestState
-import domain.remote.CurrencyApiService
 import domain.repository.CurrencyRepository
+import domain.service.local.PreferencesService
+import domain.service.remote.CurrencyApiService
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -16,7 +16,7 @@ class CurrencyRepositoryImpl(
     private val currentTimestamp: Long
 ) : CurrencyRepository {
 
-    override suspend fun getLatestExchangeRates(): RequestState<ApiResponse> {
+    override suspend fun getLatestExchangeRates(): RequestState<DataResponse> {
         val localTimestamp = preferences.getLastUpdated()
         val isDataFresh = isLocalTimestampFresh(localTimestamp)
 

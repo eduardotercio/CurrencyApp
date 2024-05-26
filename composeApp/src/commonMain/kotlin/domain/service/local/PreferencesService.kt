@@ -1,4 +1,4 @@
-package domain.local
+package domain.service.local
 
 interface PreferencesService {
 

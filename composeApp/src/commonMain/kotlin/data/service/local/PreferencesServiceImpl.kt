@@ -1,11 +1,11 @@
-package data.local
+package data.service.local
 
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.coroutines.FlowSettings
 import com.russhwolf.settings.coroutines.toFlowSettings
-import domain.local.PreferencesService
+import domain.service.local.PreferencesService
 import kotlinx.datetime.Instant
 
 @OptIn(ExperimentalSettingsApi::class)

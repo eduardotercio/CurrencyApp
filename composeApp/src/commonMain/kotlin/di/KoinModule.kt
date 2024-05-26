@@ -1,12 +1,14 @@
 package di
 
 import com.russhwolf.settings.Settings
-import data.local.PreferencesServiceImpl
-import data.remote.CurrencyApiServiceImpl
+import data.mapper.ServiceResponseMapperImpl
 import data.repository.CurrencyRepositoryImpl
-import domain.local.PreferencesService
-import domain.remote.CurrencyApiService
+import data.service.local.PreferencesServiceImpl
+import data.service.remote.CurrencyApiServiceImpl
+import domain.mapper.ServiceResponseMapper
 import domain.repository.CurrencyRepository
+import domain.service.local.PreferencesService
+import domain.service.remote.CurrencyApiService
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpTimeout
@@ -26,9 +28,14 @@ private const val API_KEY = "apikey"
 val dataModule = module {
     single { Settings() }
 
+    factory<ServiceResponseMapper> {
+        ServiceResponseMapperImpl()
+    }
+
     single<CurrencyApiService> {
         CurrencyApiServiceImpl(
-            client = get()
+            client = get(),
+            responseMapper = get()
         )
     }
 
@@ -48,10 +55,14 @@ val dataModule = module {
 }
 
 val domainModule = module {
+    factory<ServiceResponseMapper> {
+        ServiceResponseMapperImpl()
+    }
+}
+
+val presentationModule = module {
     factory {
-        HomeViewModel(
-            service = get()
-        )
+        HomeViewModel()
     }
 }
 
@@ -79,6 +90,6 @@ val ktorModule = module {
 
 fun initializeKoin() {
     startKoin {
-        modules(dataModule, domainModule, ktorModule)
+        modules(dataModule, domainModule, presentationModule, ktorModule)
     }
 }
