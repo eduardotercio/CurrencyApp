@@ -1,7 +1,12 @@
 package di
 
-import data.remote.api.CurrencyApiServiceImpl
-import domain.remote.api.CurrencyApiService
+import com.russhwolf.settings.Settings
+import data.local.PreferencesServiceImpl
+import data.remote.CurrencyApiServiceImpl
+import data.repository.CurrencyRepositoryImpl
+import domain.local.PreferencesService
+import domain.remote.CurrencyApiService
+import domain.repository.CurrencyRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpTimeout
@@ -13,12 +18,44 @@ import org.example.currencyapptest.BuildKonfig
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import presentation.screen.HomeViewModel
+import kotlin.time.TimeSource
 
 private const val TIME_OUT = 15000L
 private const val API_KEY = "apikey"
 
-val appModule = module {
+val dataModule = module {
+    single { Settings() }
 
+    single<CurrencyApiService> {
+        CurrencyApiServiceImpl(
+            client = get()
+        )
+    }
+
+    single<PreferencesService> {
+        PreferencesServiceImpl(
+            settings = get()
+        )
+    }
+
+    single<CurrencyRepository> {
+        CurrencyRepositoryImpl(
+            currencyApi = get(),
+            preferences = get(),
+            currentTimestamp = TimeSource.Monotonic.markNow().elapsedNow().inWholeMilliseconds
+        )
+    }
+}
+
+val domainModule = module {
+    factory {
+        HomeViewModel(
+            service = get()
+        )
+    }
+}
+
+val ktorModule = module {
     single {
         HttpClient {
             install(ContentNegotiation) {
@@ -38,21 +75,10 @@ val appModule = module {
             }
         }
     }
-
-    single<CurrencyApiService> {
-        CurrencyApiServiceImpl(
-            client = get()
-        )
-    }
-    factory {
-        HomeViewModel(
-            service = get()
-        )
-    }
 }
 
 fun initializeKoin() {
     startKoin {
-        modules(appModule)
+        modules(dataModule, domainModule, ktorModule)
     }
 }

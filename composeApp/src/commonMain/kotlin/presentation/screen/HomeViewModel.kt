@@ -1,7 +1,7 @@
 package presentation.screen
 
 import cafe.adriel.voyager.core.model.ScreenModel
-import domain.remote.api.CurrencyApiService
+import domain.remote.CurrencyApiService
 
 class HomeViewModel(
     private val service: CurrencyApiService
