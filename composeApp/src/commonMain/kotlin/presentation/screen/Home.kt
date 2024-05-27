@@ -1,14 +1,14 @@
 package presentation.screen
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import kotlinx.serialization.Serializable
-
+import koinViewModel
 
 
 @Composable
 fun HomeScreen(navController: NavController) {
-    val viewModel = viewModel<HomeScreenViewModel>()
+    val viewModel = koinViewModel<HomeScreenViewModel>()
+
+    viewModel.setEvent(HomeScreenContract.Event.GetString)
 
 }

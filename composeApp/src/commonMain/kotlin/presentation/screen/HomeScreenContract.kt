@@ -8,7 +8,7 @@ import presentation.screen.base.UiState
 object HomeScreenContract {
 
     sealed interface Event : UiEvent {
-
+        data object GetString: Event
     }
 
     sealed interface Effect : UiEffect {

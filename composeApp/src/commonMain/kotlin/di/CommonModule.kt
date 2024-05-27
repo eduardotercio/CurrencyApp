@@ -9,9 +9,9 @@ import domain.mapper.ServiceResponseMapper
 import domain.repository.CurrencyRepository
 import domain.service.local.PreferencesService
 import domain.service.remote.CurrencyApiService
-import org.koin.core.context.startKoin
+import domain.usecase.GetLatestExchangeRatesUseCase
+import domain.usecase.GetLatestExchangeRatesUseCaseImpl
 import org.koin.dsl.module
-import presentation.screen.HomeScreenViewModel
 import kotlin.time.TimeSource
 
 val commonModules = module {
@@ -39,6 +39,12 @@ val commonModules = module {
             currencyApi = get(),
             preferences = get(),
             currentTimestamp = TimeSource.Monotonic.markNow().elapsedNow().inWholeMilliseconds
+        )
+    }
+
+    factory<GetLatestExchangeRatesUseCase> {
+        GetLatestExchangeRatesUseCaseImpl(
+            repository = get()
         )
     }
 }
