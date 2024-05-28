@@ -9,10 +9,15 @@ import domain.mapper.ServiceResponseMapper
 import domain.repository.CurrencyRepository
 import domain.service.local.PreferencesService
 import domain.service.remote.CurrencyApiService
-import domain.usecase.GetLatestExchangeRatesUseCase
-import domain.usecase.GetLatestExchangeRatesUseCaseImpl
+import domain.usecase.CurrentFormattedDateUseCase
+import domain.usecase.CurrentFormattedDateUseCaseImpl
+import domain.usecase.LatestExchangeRatesUseCase
+import domain.usecase.LatestExchangeRatesUseCaseImpl
+import domain.usecase.RatesStatusUseCase
+import domain.usecase.RatesStatusUseCaseImpl
+import domain.usecase.SaveCurrentMetaDataUseCase
+import domain.usecase.SaveCurrentMetaDataUseCaseImpl
 import org.koin.dsl.module
-import kotlin.time.TimeSource
 
 val commonModules = module {
     single { Settings() }
@@ -37,13 +42,28 @@ val commonModules = module {
     single<CurrencyRepository> {
         CurrencyRepositoryImpl(
             currencyApi = get(),
-            preferences = get(),
-            currentTimestamp = TimeSource.Monotonic.markNow().elapsedNow().inWholeMilliseconds
+            preferences = get()
         )
     }
 
-    factory<GetLatestExchangeRatesUseCase> {
-        GetLatestExchangeRatesUseCaseImpl(
+    factory<LatestExchangeRatesUseCase> {
+        LatestExchangeRatesUseCaseImpl(
+            repository = get()
+        )
+    }
+
+    factory<CurrentFormattedDateUseCase> {
+        CurrentFormattedDateUseCaseImpl()
+    }
+
+    factory<RatesStatusUseCase> {
+        RatesStatusUseCaseImpl(
+            repository = get()
+        )
+    }
+
+    factory<SaveCurrentMetaDataUseCase> {
+        SaveCurrentMetaDataUseCaseImpl(
             repository = get()
         )
     }

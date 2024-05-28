@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class MetaData(
     @SerialName("last_updated_at")
-    val lastUpdate: String
+    val lastTimeUpdated: String
 )

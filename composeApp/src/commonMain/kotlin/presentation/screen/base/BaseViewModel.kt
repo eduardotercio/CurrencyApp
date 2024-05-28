@@ -27,7 +27,7 @@ abstract class BaseViewModel<Event : UiEvent, State : UiState, Effect : UiEffect
         get() = state.value
 
     private val _state: MutableStateFlow<State> = MutableStateFlow(initialState)
-    private val state: StateFlow<State> = _state
+    val state: StateFlow<State> = _state
 
     private val _event: MutableSharedFlow<Event> = MutableSharedFlow()
 

@@ -1,6 +1,5 @@
 import androidx.compose.ui.window.ComposeUIViewController
 import di.KoinInitializer
-import presentation.screen.HomeScreen
 
 fun MainViewController() = ComposeUIViewController(
     configure = {

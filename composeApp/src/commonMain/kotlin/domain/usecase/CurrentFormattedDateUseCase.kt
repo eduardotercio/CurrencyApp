@@ -1,5 +1,5 @@
 package domain.usecase
 
-interface GetLatestExchangeRatesUseCase {
+interface CurrentFormattedDateUseCase {
     operator fun invoke(): String
 }

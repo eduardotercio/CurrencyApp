@@ -2,7 +2,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import presentation.screen.HomeScreen
+import presentation.screen.home.HomeScreen
 
 sealed class Screen(val route: String) {
     data object Home : Screen("home")

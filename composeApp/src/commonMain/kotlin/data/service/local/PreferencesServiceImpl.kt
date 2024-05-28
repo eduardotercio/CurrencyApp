@@ -6,7 +6,6 @@ import com.russhwolf.settings.Settings
 import com.russhwolf.settings.coroutines.FlowSettings
 import com.russhwolf.settings.coroutines.toFlowSettings
 import domain.service.local.PreferencesService
-import kotlinx.datetime.Instant
 
 @OptIn(ExperimentalSettingsApi::class)
 class PreferencesServiceImpl(
@@ -14,10 +13,10 @@ class PreferencesServiceImpl(
 ) : PreferencesService {
 
     private val flowSettings: FlowSettings = (settings as ObservableSettings).toFlowSettings()
-    override suspend fun saveLastUpdated(lastUpdated: String) {
+    override suspend fun saveLastUpdated(millisUpdated: Long) {
         flowSettings.putLong(
             key = TIMESTAMP_KEY,
-            value = Instant.parse(lastUpdated).toEpochMilliseconds()
+            value = millisUpdated
         )
     }
 

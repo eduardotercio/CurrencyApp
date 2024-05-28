@@ -13,21 +13,15 @@ import kotlinx.datetime.toLocalDateTime
 class CurrencyRepositoryImpl(
     private val currencyApi: CurrencyApiService,
     private val preferences: PreferencesService,
-    private val currentTimestamp: Long
 ) : CurrencyRepository {
 
-    override suspend fun getLatestExchangeRates(): RequestState<DataResponse> {
-        val localTimestamp = preferences.getLastUpdated()
-        val isDataFresh = isLocalTimestampFresh(localTimestamp)
+    override suspend fun getLatestExchangeRates(isDataFresh: Boolean): RequestState<DataResponse> {
 
-        return if (isDataFresh) {
-            TODO()
-        } else {
-            currencyApi.getLatestExchangeRates()
-        }
+        return currencyApi.getLatestExchangeRates()
     }
 
-    private fun isLocalTimestampFresh(localTimestamp: Long): Boolean {
+    override suspend fun isDataFresh(currentTimestamp: Long): Boolean {
+        val localTimestamp = preferences.getLastUpdated()
         return if (localTimestamp == ZERO) {
             false
         } else {
@@ -42,8 +36,9 @@ class CurrencyRepositoryImpl(
         }
     }
 
-    override suspend fun saveTimestamp(timestampUpdated: String) =
-        preferences.saveLastUpdated(timestampUpdated)
+
+    override suspend fun saveTimestamp(millisUpdated: Long) =
+        preferences.saveLastUpdated(millisUpdated)
 
 
     private companion object {
