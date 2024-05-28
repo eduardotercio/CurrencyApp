@@ -30,6 +30,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             when (event) {
                 is HomeScreenContract.Event.RefreshRates -> {
+                    fetchNewRates()
                     getRatesStatus()
                 }
             }
