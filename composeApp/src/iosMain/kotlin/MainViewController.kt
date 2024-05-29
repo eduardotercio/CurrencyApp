@@ -6,6 +6,5 @@ fun MainViewController() = ComposeUIViewController(
         KoinInitializer().init()
     }
 ) {
-//    HomeScreen(navController) // This will need to be adjusted for iOS navigation
     App()
 }

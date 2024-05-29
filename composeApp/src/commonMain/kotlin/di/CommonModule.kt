@@ -13,10 +13,10 @@ import domain.usecase.CurrentFormattedDateUseCase
 import domain.usecase.CurrentFormattedDateUseCaseImpl
 import domain.usecase.LatestExchangeRatesUseCase
 import domain.usecase.LatestExchangeRatesUseCaseImpl
-import domain.usecase.RatesStatusUseCase
-import domain.usecase.RatesStatusUseCaseImpl
-import domain.usecase.SaveCurrentMetaDataUseCase
-import domain.usecase.SaveCurrentMetaDataUseCaseImpl
+import domain.usecase.TimeFromLastRequestUseCase
+import domain.usecase.TimeFromLastRequestUseCaseImpl
+import domain.usecase.SaveLastRequestTimeUseCase
+import domain.usecase.SaveLastRequestTimeUseCaseImpl
 import org.koin.dsl.module
 
 val commonModules = module {
@@ -56,14 +56,14 @@ val commonModules = module {
         CurrentFormattedDateUseCaseImpl()
     }
 
-    factory<RatesStatusUseCase> {
-        RatesStatusUseCaseImpl(
+    factory<TimeFromLastRequestUseCase> {
+        TimeFromLastRequestUseCaseImpl(
             repository = get()
         )
     }
 
-    factory<SaveCurrentMetaDataUseCase> {
-        SaveCurrentMetaDataUseCaseImpl(
+    factory<SaveLastRequestTimeUseCase> {
+        SaveLastRequestTimeUseCaseImpl(
             repository = get()
         )
     }

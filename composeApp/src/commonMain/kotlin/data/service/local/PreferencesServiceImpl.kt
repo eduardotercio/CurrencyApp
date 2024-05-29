@@ -13,14 +13,14 @@ class PreferencesServiceImpl(
 ) : PreferencesService {
 
     private val flowSettings: FlowSettings = (settings as ObservableSettings).toFlowSettings()
-    override suspend fun saveLastUpdated(millisUpdated: Long) {
+    override suspend fun saveLastRequestTime(millisUpdated: Long) {
         flowSettings.putLong(
             key = TIMESTAMP_KEY,
             value = millisUpdated
         )
     }
 
-    override suspend fun getLastUpdated(): Long {
+    override suspend fun getLastRequestTime(): Long {
         return flowSettings.getLong(
             key = TIMESTAMP_KEY,
             defaultValue = DEFAULT_TIMESTAMP_VALUE

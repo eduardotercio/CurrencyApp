@@ -5,10 +5,10 @@ import domain.model.RequestState
 
 interface CurrencyRepository {
 
-    suspend fun getLatestExchangeRates(isDataFresh: Boolean): RequestState<DataResponse>
+    suspend fun getLatestExchangeRates(getFromLocal: Boolean): RequestState<DataResponse>
 
-    suspend fun isDataFresh(currentTimestamp: Long): Boolean
+    suspend fun getLastRequestTime(): Long
 
-    suspend fun saveTimestamp(millisUpdated: Long)
+    suspend fun saveLastRequestTime(millisUpdated: Long)
 
 }

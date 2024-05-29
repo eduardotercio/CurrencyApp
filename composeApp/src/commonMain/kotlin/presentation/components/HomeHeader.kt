@@ -23,12 +23,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import currencyapptest.composeapp.generated.resources.Res
+import currencyapptest.composeapp.generated.resources.app_refreshed
 import currencyapptest.composeapp.generated.resources.exchange_illustration
 import currencyapptest.composeapp.generated.resources.refresh_ic
-import domain.model.RateStatus
+import currencyapptest.composeapp.generated.resources.refresh_the_app
+import freshColor
 import headerColor
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import presentation.screen.home.HomeScreenContract
 import staleColor
 
@@ -60,7 +63,18 @@ fun RatesStatus(
     onRatesRefresh: () -> Unit
 ) {
     val dateTime = state.currentFormattedDate
-    val status = state.rateStatus
+    val isRefreshEnabled = state.isRefreshEnabled
+
+    var refreshText: String
+    var refreshColor: Color
+
+    if (isRefreshEnabled) {
+        refreshText = stringResource(Res.string.refresh_the_app)
+        refreshColor = staleColor
+    } else {
+        refreshText = stringResource(Res.string.app_refreshed)
+        refreshColor = freshColor
+    }
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -79,13 +93,13 @@ fun RatesStatus(
                     color = Color.White
                 )
                 Text(
-                    text = status.title,
+                    text = refreshText,
                     fontSize = MaterialTheme.typography.bodySmall.fontSize,
-                    color = status.color,
+                    color = refreshColor
                 )
             }
         }
-        if (status == RateStatus.Stale) {
+        if (isRefreshEnabled) {
             IconButton(onClick = onRatesRefresh) {
                 Icon(
                     modifier = Modifier.size(24.dp),

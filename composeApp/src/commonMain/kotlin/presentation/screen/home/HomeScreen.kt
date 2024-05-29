@@ -26,7 +26,7 @@ fun HomeScreen(navController: NavController) {
         HomeHeader(
             state = state,
             onRatesRefresh = {
-                viewModel.setEvent(HomeScreenContract.Event.RefreshRates)
+                viewModel.setEvent(HomeScreenContract.Event.RefreshData)
             }
         )
     }
