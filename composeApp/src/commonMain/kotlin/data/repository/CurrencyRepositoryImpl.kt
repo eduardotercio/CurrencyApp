@@ -13,11 +13,12 @@ class CurrencyRepositoryImpl(
 ) : CurrencyRepository {
 
     override suspend fun getLatestExchangeRates(getFromLocal: Boolean): RequestState<DataResponse> {
-        return if (getFromLocal) {
-            TODO()
-        } else {
-            currencyApi.getLatestExchangeRates()
-        }
+//        return if (getFromLocal) {
+//            TODO()
+//        } else {
+//            currencyApi.getLatestExchangeRates()
+//        }
+        return currencyApi.getLatestExchangeRates()
     }
 
     override suspend fun getLastRequestTime(): Long {

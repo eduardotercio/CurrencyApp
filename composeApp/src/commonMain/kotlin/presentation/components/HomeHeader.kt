@@ -32,6 +32,7 @@ import headerColor
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import presentation.screen.home.HomeScreenContract
 import staleColor
 
@@ -43,7 +44,7 @@ fun HomeHeader(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp))
+            .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
             .background(headerColor)
             .padding(24.dp)
     ) {

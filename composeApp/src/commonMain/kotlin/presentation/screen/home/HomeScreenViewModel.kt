@@ -29,7 +29,9 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             when (event) {
                 is HomeScreenContract.Event.RefreshData -> {
-                    fetchNewRates()
+                    fetchNewRates(
+                        requestToApi = true
+                    )
                 }
             }
         }
@@ -45,14 +47,19 @@ class HomeScreenViewModel(
         }
     }
 
-    private suspend fun fetchNewRates() {
-        val getFromLocal = getTimeFromLastRequestUseCase() < ONE_DAY
+    private suspend fun fetchNewRates(requestToApi: Boolean = false) {
+        val getFromLocal = !requestToApi || (getTimeFromLastRequestUseCase() < ONE_DAY)
 
         val response = getLatestExchangeRatesUseCase(
             getFromLocal = getFromLocal
         )
         when (response) {
             is RequestState.Success -> {
+                setState {
+                    copy(
+                        currencyList = this.currencyList
+                    )
+                }
                 if (!getFromLocal) {
                     saveTimestamp()
                 }
