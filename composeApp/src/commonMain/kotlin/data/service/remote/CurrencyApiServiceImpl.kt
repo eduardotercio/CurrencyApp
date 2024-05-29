@@ -22,19 +22,6 @@ class CurrencyApiServiceImpl(
             if (request.status == HttpStatusCode.OK) {
                 val apiResponse = Json.decodeFromString<ApiResponse>(request.body())
 
-//                val availableCurrencyCodes = apiResponse.data.keys
-//                    .filter {
-//                        CurrencyCode.entries
-//                            .map { code -> code.name }
-//                            .toSet()
-//                            .contains(it)
-//                    }
-//
-//                val availableCurrencies = apiResponse.data.values
-//                    .filter { currency ->
-//                        availableCurrencyCodes.contains(currency.code)
-//                    }
-
                 RequestState.Success(data = responseMapper.mapApiToData(apiResponse))
             } else {
                 RequestState.Error(message = "Error: ${request.status}")
