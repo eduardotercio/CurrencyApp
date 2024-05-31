@@ -11,12 +11,10 @@ object HomeScreenContract {
     sealed interface Event : UiEvent {
         data object RefreshData : Event
 
-        data object SwitchConversionCurrencies: Event
+        data object SwitchConversionCurrencies : Event
     }
 
-    sealed interface Effect : UiEffect {
-
-    }
+    sealed interface Effect : UiEffect
 
     data class State(
         val currencyList: List<Currency> = listOf(),

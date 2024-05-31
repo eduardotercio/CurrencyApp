@@ -3,10 +3,12 @@ package di
 import com.russhwolf.settings.Settings
 import data.mapper.ServiceResponseMapperImpl
 import data.repository.CurrencyRepositoryImpl
+import data.service.local.MongoDBServiceImpl
 import data.service.local.PreferencesServiceImpl
 import data.service.remote.CurrencyApiServiceImpl
 import domain.mapper.ServiceResponseMapper
 import domain.repository.CurrencyRepository
+import domain.service.local.MongoDBService
 import domain.service.local.PreferencesService
 import domain.service.remote.CurrencyApiService
 import domain.usecase.CurrentFormattedDateUseCase
@@ -30,6 +32,7 @@ val commonModules = module {
     // Data
     singleOf(::Settings)
     factoryOf(::ServiceResponseMapperImpl) bind ServiceResponseMapper::class
+    singleOf(::MongoDBServiceImpl) bind MongoDBService::class
     singleOf(::CurrencyApiServiceImpl) bind CurrencyApiService::class
     singleOf(::PreferencesServiceImpl) bind PreferencesService::class
     singleOf(::CurrencyRepositoryImpl) bind CurrencyRepository::class
