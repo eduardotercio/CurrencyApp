@@ -1,27 +1,27 @@
-package data.local
+package data.service.local
 
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.coroutines.FlowSettings
 import com.russhwolf.settings.coroutines.toFlowSettings
-import domain.local.PreferencesService
-import kotlinx.datetime.Instant
+import domain.service.local.PreferencesService
 
 @OptIn(ExperimentalSettingsApi::class)
 class PreferencesServiceImpl(
-    private val settings: Settings
+    settings: Settings
 ) : PreferencesService {
 
     private val flowSettings: FlowSettings = (settings as ObservableSettings).toFlowSettings()
-    override suspend fun saveLastUpdated(lastUpdated: String) {
+    override suspend fun saveLastRequestTime(millisUpdated: Long) {
         flowSettings.putLong(
             key = TIMESTAMP_KEY,
-            value = Instant.parse(lastUpdated).toEpochMilliseconds()
+            value = millisUpdated
         )
+
     }
 
-    override suspend fun getLastUpdated(): Long {
+    override suspend fun getLastRequestTime(): Long {
         return flowSettings.getLong(
             key = TIMESTAMP_KEY,
             defaultValue = DEFAULT_TIMESTAMP_VALUE

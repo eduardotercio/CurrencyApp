@@ -1,53 +1,40 @@
 package data.repository
 
-import domain.local.PreferencesService
-import domain.model.ApiResponse
+import domain.model.ConversionCurrencies
+import domain.model.DataResponse
 import domain.model.RequestState
-import domain.remote.CurrencyApiService
 import domain.repository.CurrencyRepository
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import domain.service.local.PreferencesService
+import domain.service.remote.CurrencyApiService
 
 
 class CurrencyRepositoryImpl(
     private val currencyApi: CurrencyApiService,
     private val preferences: PreferencesService,
-    private val currentTimestamp: Long
 ) : CurrencyRepository {
 
-    override suspend fun getLatestExchangeRates(): RequestState<ApiResponse> {
-        val localTimestamp = preferences.getLastUpdated()
-        val isDataFresh = isLocalTimestampFresh(localTimestamp)
-
-        return if (isDataFresh) {
-            TODO()
-        } else {
-            currencyApi.getLatestExchangeRates()
-        }
+    override suspend fun getLatestExchangeRates(getFromLocal: Boolean): RequestState<DataResponse> {
+//        return if (getFromLocal) {
+//            TODO()
+//        } else {
+//            currencyApi.getLatestExchangeRates()
+//        }
+        return currencyApi.getLatestExchangeRates()
     }
 
-    private fun isLocalTimestampFresh(localTimestamp: Long): Boolean {
-        return if (localTimestamp == ZERO) {
-            false
-        } else {
-            val currentDateTime = Instant.fromEpochMilliseconds(currentTimestamp).toLocalDateTime(
-                TimeZone.currentSystemDefault()
-            )
-            val localDateTime = Instant.fromEpochMilliseconds(localTimestamp).toLocalDateTime(
-                TimeZone.currentSystemDefault()
-            )
-
-            (currentDateTime.date.dayOfYear - localDateTime.date.dayOfYear) < ONE
-        }
+    override suspend fun getLastRequestTime(): Long {
+        return preferences.getLastRequestTime()
     }
 
-    override suspend fun saveTimestamp(timestampUpdated: String) =
-        preferences.saveLastUpdated(timestampUpdated)
+    override suspend fun saveLastRequestTime(millisUpdated: Long) =
+        preferences.saveLastRequestTime(millisUpdated)
 
-
-    private companion object {
-        const val ZERO = 0L
-        const val ONE = 1L
+    override suspend fun getLastConversionCurrencies(): ConversionCurrencies {
+        return ConversionCurrencies()
     }
+
+    override suspend fun saveLastConversionCurrencies() {
+
+    }
+
 }

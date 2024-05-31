@@ -6,18 +6,23 @@ android-targetSdk = "34"
 androidx-activityCompose = "1.9.0"
 buildkonfigGradlePlugin = "latest_version"
 compose = "1.6.7"
-compose-plugin = "1.6.2"
+compose-plugin = "1.6.10"
 kotlin = "1.9.23"
 kotlinGradlePlugin = "1.9.0"
 multiplatformSettings = "1.1.1"
-voyager = "1.0.0"
-koinCore = "3.5.3"
 realm = "1.13.0"
 coroutines = "1.8.0"
 statelyCommon = "2.0.5"
 ktor = "2.3.10"
 date-time = "0.5.0"
 build-konfig = "0.15.1"
+
+lifecycleViewModel = "2.8.0"
+koin = "3.6.0-alpha3"
+koinCompose = "3.6.0-alpha3"
+koinComposeMultiplatform = "1.2.0-alpha3"
+serialization = "1.6.3"
+navigationComposeVersion = "2.7.0-alpha07"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -28,12 +33,6 @@ compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview"
 kotlin-gradle-plugin-v190 = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinGradlePlugin" }
 multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatformSettings" }
 multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatformSettings" }
-
-voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
-voyager-screen-model = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager" }
-voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
-voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager" }
-koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinCore" }
 
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
@@ -49,6 +48,14 @@ stately-common = { module = "co.touchlab:stately-common", version.ref = "stately
 
 gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 build-konfig = { module = "com.codingfeline.buildkonfig:buildkonfig-gradle-plugin", version.ref = "build-konfig" }
+
+lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycleViewModel" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinCompose" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinComposeMultiplatform" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

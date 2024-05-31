@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">CurrencyAppTest</string>
+    <string name="app_refreshed">App Refreshed</string>
+    <string name="refresh_the_app">Refresh the App</string>
+    <string name="from_text">From</string>
+    <string name="to_text">To</string>
+</resources>
