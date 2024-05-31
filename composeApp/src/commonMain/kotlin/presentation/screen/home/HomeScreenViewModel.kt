@@ -1,9 +1,12 @@
 package presentation.screen.home
 
 import androidx.lifecycle.viewModelScope
+import domain.model.ConversionCurrencies
 import domain.model.RequestState
 import domain.usecase.CurrentFormattedDateUseCase
+import domain.usecase.GetLastConversionCurrenciesUseCase
 import domain.usecase.LatestExchangeRatesUseCase
+import domain.usecase.SaveLastConversionCurrenciesUseCaseImpl
 import domain.usecase.SaveLastRequestTimeUseCase
 import domain.usecase.TimeFromLastRequestUseCase
 import kotlinx.coroutines.launch
@@ -13,7 +16,9 @@ class HomeScreenViewModel(
     private val getLatestExchangeRatesUseCase: LatestExchangeRatesUseCase,
     private val getCurrentFormattedDateUseCase: CurrentFormattedDateUseCase,
     private val getTimeFromLastRequestUseCase: TimeFromLastRequestUseCase,
-    private val saveLastRequestTimeUseCase: SaveLastRequestTimeUseCase
+    private val saveLastRequestTimeUseCase: SaveLastRequestTimeUseCase,
+    private val getLastConversionCurrenciesUseCase: GetLastConversionCurrenciesUseCase,
+    private val saveLastConversionCurrenciesUseCaseImpl: SaveLastConversionCurrenciesUseCaseImpl
 ) : BaseViewModel<HomeScreenContract.Event, HomeScreenContract.State, HomeScreenContract.Effect>() {
     override fun setInitialState() = HomeScreenContract.State()
 
@@ -22,6 +27,7 @@ class HomeScreenViewModel(
             getFormattedDate()
             fetchNewRates()
             checkIfCanRefresh()
+            getLastConversionCurrencies()
         }
     }
 
@@ -32,6 +38,10 @@ class HomeScreenViewModel(
                     fetchNewRates(
                         requestToApi = true
                     )
+                }
+
+                is HomeScreenContract.Event.SwitchConversionCurrencies -> {
+                    switchConversionCurrencies()
                 }
             }
         }
@@ -48,7 +58,12 @@ class HomeScreenViewModel(
     }
 
     private suspend fun fetchNewRates(requestToApi: Boolean = false) {
-        val getFromLocal = !requestToApi || (getTimeFromLastRequestUseCase() < ONE_DAY)
+        val getFromLocal = if (requestToApi) {
+            false
+        } else {
+            val timeFromLastRequest = getTimeFromLastRequestUseCase()
+            timeFromLastRequest < ONE_DAY
+        }
 
         val response = getLatestExchangeRatesUseCase(
             getFromLocal = getFromLocal
@@ -85,6 +100,36 @@ class HomeScreenViewModel(
 
     private suspend fun saveTimestamp() {
         saveLastRequestTimeUseCase()
+
+        setState {
+            copy(
+                isRefreshEnabled = false
+            )
+        }
+    }
+
+    private suspend fun getLastConversionCurrencies() {
+        val lastConversionCurrencies = getLastConversionCurrenciesUseCase()
+
+        setState {
+            copy(
+                conversionCurrencies = lastConversionCurrencies
+            )
+        }
+    }
+
+    private fun switchConversionCurrencies() {
+        val currentSouce = currentState.conversionCurrencies.source
+        val currentTarget = currentState.conversionCurrencies.target
+
+        setState {
+            copy(
+                conversionCurrencies = ConversionCurrencies(
+                    source = currentTarget,
+                    target = currentSouce
+                )
+            )
+        }
     }
 
     private companion object {

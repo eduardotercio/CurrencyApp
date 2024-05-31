@@ -25,22 +25,25 @@ import androidx.compose.ui.unit.dp
 import currencyapptest.composeapp.generated.resources.Res
 import currencyapptest.composeapp.generated.resources.app_refreshed
 import currencyapptest.composeapp.generated.resources.exchange_illustration
+import currencyapptest.composeapp.generated.resources.from_text
 import currencyapptest.composeapp.generated.resources.refresh_ic
 import currencyapptest.composeapp.generated.resources.refresh_the_app
+import currencyapptest.composeapp.generated.resources.to_text
 import freshColor
 import headerColor
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import presentation.screen.home.HomeScreenContract
 import staleColor
 
 @Composable
 fun HomeHeader(
     state: HomeScreenContract.State,
-    onRatesRefresh: () -> Unit
+    onRefreshButtonClicked: () -> Unit,
+    onSwitchButtonClicked: () -> Unit
 ) {
+    val conversionCurrencies = state.conversionCurrencies
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -51,23 +54,48 @@ fun HomeHeader(
         Spacer(modifier = Modifier.height(24.dp))
         RatesStatus(
             state = state,
-            onRatesRefresh = onRatesRefresh
+            onRefreshButtonClicked = onRefreshButtonClicked
         )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            CurrencyFlagButton(
+                modifier = Modifier.weight(1f),
+                currency = conversionCurrencies.source,
+                placeHolder = stringResource(Res.string.from_text),
+                onClick = {}
+            )
+
+            SwitchButton(
+                modifier = Modifier.padding(top = 24.dp),
+                onClick = onSwitchButtonClicked
+            )
+
+            CurrencyFlagButton(
+                modifier = Modifier.weight(1f),
+                currency = conversionCurrencies.target,
+                placeHolder = stringResource(Res.string.to_text),
+                onClick = {}
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        InputValueButton()
     }
 
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun RatesStatus(
     state: HomeScreenContract.State,
-    onRatesRefresh: () -> Unit
+    onRefreshButtonClicked: () -> Unit
 ) {
     val dateTime = state.currentFormattedDate
     val isRefreshEnabled = state.isRefreshEnabled
 
-    var refreshText: String
-    var refreshColor: Color
+    val refreshText: String
+    val refreshColor: Color
 
     if (isRefreshEnabled) {
         refreshText = stringResource(Res.string.refresh_the_app)
@@ -101,7 +129,7 @@ fun RatesStatus(
             }
         }
         if (isRefreshEnabled) {
-            IconButton(onClick = onRatesRefresh) {
+            IconButton(onClick = onRefreshButtonClicked) {
                 Icon(
                     modifier = Modifier.size(24.dp),
                     painter = painterResource(Res.drawable.refresh_ic),

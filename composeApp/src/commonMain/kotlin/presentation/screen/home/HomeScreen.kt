@@ -1,5 +1,6 @@
 package presentation.screen.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -10,6 +11,7 @@ import androidx.navigation.NavController
 import koinViewModel
 import presentation.components.HomeBody
 import presentation.components.HomeHeader
+import surfaceColor
 
 
 @Composable
@@ -20,11 +22,15 @@ fun HomeScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(surfaceColor)
     ) {
         HomeHeader(
             state = state,
-            onRatesRefresh = {
+            onRefreshButtonClicked = {
                 viewModel.setEvent(HomeScreenContract.Event.RefreshData)
+            },
+            onSwitchButtonClicked = {
+                viewModel.setEvent(HomeScreenContract.Event.SwitchConversionCurrencies)
             }
         )
         HomeBody(

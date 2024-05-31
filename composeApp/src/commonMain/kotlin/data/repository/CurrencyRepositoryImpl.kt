@@ -1,5 +1,6 @@
 package data.repository
 
+import domain.model.ConversionCurrencies
 import domain.model.DataResponse
 import domain.model.RequestState
 import domain.repository.CurrencyRepository
@@ -27,5 +28,13 @@ class CurrencyRepositoryImpl(
 
     override suspend fun saveLastRequestTime(millisUpdated: Long) =
         preferences.saveLastRequestTime(millisUpdated)
+
+    override suspend fun getLastConversionCurrencies(): ConversionCurrencies {
+        return ConversionCurrencies()
+    }
+
+    override suspend fun saveLastConversionCurrencies() {
+
+    }
 
 }

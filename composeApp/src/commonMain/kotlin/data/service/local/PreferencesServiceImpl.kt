@@ -9,7 +9,7 @@ import domain.service.local.PreferencesService
 
 @OptIn(ExperimentalSettingsApi::class)
 class PreferencesServiceImpl(
-    private val settings: Settings
+    settings: Settings
 ) : PreferencesService {
 
     private val flowSettings: FlowSettings = (settings as ObservableSettings).toFlowSettings()
@@ -18,6 +18,7 @@ class PreferencesServiceImpl(
             key = TIMESTAMP_KEY,
             value = millisUpdated
         )
+
     }
 
     override suspend fun getLastRequestTime(): Long {
