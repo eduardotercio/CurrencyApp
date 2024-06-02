@@ -46,12 +46,12 @@ class CurrencyRepositoryImpl(
     override suspend fun saveLastRequestTime(millisUpdated: Long) =
         preferences.saveLastRequestTime(millisUpdated)
 
-    override suspend fun getLastConversionCurrencies(): ConversionCurrencies {
-        return ConversionCurrencies()
+    override suspend fun getLastConversionCurrencies(currenciesList: List<Currency>): ConversionCurrencies? {
+        return preferences.getLastConversionCurrencies(currenciesList)
     }
 
-    override suspend fun saveLastConversionCurrencies() {
-
+    override suspend fun saveLastConversionCurrencies(conversionCurrencies: ConversionCurrencies) {
+        preferences.saveLastConversionCurrencies(conversionCurrencies)
     }
 
 }

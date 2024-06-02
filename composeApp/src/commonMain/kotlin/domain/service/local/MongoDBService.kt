@@ -11,6 +11,4 @@ interface MongoDBService {
     suspend fun insertCurrencies(vararg currencies: Currency, retrySave: Boolean = true)
 
     suspend fun readCurrencies(retryRead: Boolean = true): Flow<RequestState<DataResponse>>
-
-    suspend fun cleanRealm()
 }

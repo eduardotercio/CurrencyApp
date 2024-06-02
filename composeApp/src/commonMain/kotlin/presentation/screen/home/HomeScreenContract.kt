@@ -2,9 +2,9 @@ package presentation.screen.home
 
 import domain.model.ConversionCurrencies
 import domain.model.Currency
-import presentation.screen.base.UiEffect
-import presentation.screen.base.UiEvent
-import presentation.screen.base.UiState
+import presentation.base.UiEffect
+import presentation.base.UiEvent
+import presentation.base.UiState
 
 object HomeScreenContract {
 
@@ -12,6 +12,10 @@ object HomeScreenContract {
         data object RefreshData : Event
 
         data object SwitchConversionCurrencies : Event
+
+        data class ConvertCurrencies(
+            val conversionCurrencies: ConversionCurrencies
+        ): Event
     }
 
     sealed interface Effect : UiEffect

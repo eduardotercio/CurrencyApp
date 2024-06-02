@@ -29,6 +29,7 @@ class MongoDBServiceImpl : MongoDBService {
     }
 
     override suspend fun insertCurrencies(vararg currencies: Currency, retrySave: Boolean) {
+        cleanRealm()
         realm?.write {
             currencies.forEach { currency ->
                 copyToRealm(currency)
@@ -37,8 +38,6 @@ class MongoDBServiceImpl : MongoDBService {
             if (retrySave) {
                 configureRealm()
                 insertCurrencies(*currencies, retrySave = false)
-            } else {
-                // error handling
             }
         }
     }
@@ -64,7 +63,7 @@ class MongoDBServiceImpl : MongoDBService {
         }
     }
 
-    override suspend fun cleanRealm() {
+    private suspend fun cleanRealm() {
         realm?.write {
             val x = this.query<Currency>()
             delete(x)

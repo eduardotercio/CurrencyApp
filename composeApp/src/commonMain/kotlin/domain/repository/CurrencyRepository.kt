@@ -15,8 +15,7 @@ interface CurrencyRepository {
 
     suspend fun saveLastRequestTime(millisUpdated: Long)
 
-    suspend fun getLastConversionCurrencies(): ConversionCurrencies
+    suspend fun getLastConversionCurrencies(currenciesList: List<Currency>): ConversionCurrencies?
 
-    suspend fun saveLastConversionCurrencies()
-
+    suspend fun saveLastConversionCurrencies(conversionCurrencies: ConversionCurrencies)
 }
