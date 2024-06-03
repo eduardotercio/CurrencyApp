@@ -1,6 +1,17 @@
 package presentation.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -45,20 +57,20 @@ fun CurrencyFlagButton(
     modifier: Modifier = Modifier,
     currency: Currency,
     placeHolder: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    animate: Boolean,
+    transitionSpec: ContentTransform = scaleIn(tween(durationMillis = 400))
+            + fadeIn(tween(durationMillis = 800))
+            togetherWith scaleOut(tween(durationMillis = 400))
+            + fadeOut(tween(durationMillis = 800))
 ) {
-    val flag = remember(currency) {
-        CurrencyCode.entries.first { code ->
-            code.name == currency.code
-        }.flag
-    }
-
     Column(
         modifier = modifier
     ) {
         Text(
             text = placeHolder,
             fontSize = MaterialTheme.typography.bodySmall.fontSize,
+            color = Color.White
         )
         Row(
             modifier = Modifier
@@ -70,18 +82,40 @@ fun CurrencyFlagButton(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Icon(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(flag),
-                tint = Color.Unspecified,
-                contentDescription = "Country image",
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = currency.code,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
+            AnimatedContent(
+                targetState = currency,
+                transitionSpec = {
+                    if (animate) transitionSpec
+                    else ContentTransform(EnterTransition.None, ExitTransition.None)
+                },
+                label = "Content Animation"
+            ) {
+                val flag = remember(it) {
+                    CurrencyCode.entries.first { code ->
+                        code.name == currency.code
+                    }.flag
+                }
+                val code by remember { mutableStateOf(it.code) }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        modifier = Modifier.size(20.dp),
+                        painter = painterResource(flag),
+                        tint = Color.Unspecified,
+                        contentDescription = "Country image",
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+
+                    Text(
+                        text = code,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
+            }
         }
     }
 }
@@ -91,9 +125,21 @@ fun SwitchButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
+    var animatedStarted by remember { mutableStateOf(false) }
+    val animatedRotation by animateFloatAsState(
+        targetValue = if (animatedStarted) 180f else 0f,
+        animationSpec = tween(500)
+    )
+
     IconButton(
-        modifier = modifier,
-        onClick = onClick
+        modifier = modifier
+            .graphicsLayer {
+                rotationY = animatedRotation
+            },
+        onClick = {
+            animatedStarted = !animatedStarted
+            onClick()
+        }
     ) {
         Icon(
             painter = painterResource(Res.drawable.switch_ic),

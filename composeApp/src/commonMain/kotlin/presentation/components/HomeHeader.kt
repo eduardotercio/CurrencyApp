@@ -17,6 +17,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,23 +65,29 @@ fun HomeHeader(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
+            var animate by remember { mutableStateOf(false) }
             CurrencyFlagButton(
                 modifier = Modifier.weight(1f),
                 currency = conversionCurrencies.source,
                 placeHolder = stringResource(Res.string.from_text),
-                onClick = {}
+                onClick = {},
+                animate = animate
             )
 
             SwitchButton(
                 modifier = Modifier.padding(top = 24.dp),
-                onClick = onSwitchButtonClicked
+                onClick = {
+                    animate = true
+                    onSwitchButtonClicked()
+                }
             )
 
             CurrencyFlagButton(
                 modifier = Modifier.weight(1f),
                 currency = conversionCurrencies.target,
                 placeHolder = stringResource(Res.string.to_text),
-                onClick = {}
+                onClick = {},
+                animate = animate
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
