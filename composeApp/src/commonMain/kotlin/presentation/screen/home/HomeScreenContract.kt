@@ -2,21 +2,23 @@ package presentation.screen.home
 
 import domain.model.ConversionCurrencies
 import domain.model.Currency
-import presentation.screen.base.UiEffect
-import presentation.screen.base.UiEvent
-import presentation.screen.base.UiState
+import presentation.base.UiEffect
+import presentation.base.UiEvent
+import presentation.base.UiState
 
 object HomeScreenContract {
 
     sealed interface Event : UiEvent {
         data object RefreshData : Event
 
-        data object SwitchConversionCurrencies: Event
+        data object SwitchConversionCurrencies : Event
+
+        data class ConvertCurrencies(
+            val conversionCurrencies: ConversionCurrencies
+        ): Event
     }
 
-    sealed interface Effect : UiEffect {
-
-    }
+    sealed interface Effect : UiEffect
 
     data class State(
         val currencyList: List<Currency> = listOf(),

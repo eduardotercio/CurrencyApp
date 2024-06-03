@@ -10,7 +10,7 @@ import domain.usecase.SaveLastConversionCurrenciesUseCaseImpl
 import domain.usecase.SaveLastRequestTimeUseCase
 import domain.usecase.TimeFromLastRequestUseCase
 import kotlinx.coroutines.launch
-import presentation.screen.base.BaseViewModel
+import presentation.base.BaseViewModel
 
 class HomeScreenViewModel(
     private val getLatestExchangeRatesUseCase: LatestExchangeRatesUseCase,
@@ -26,8 +26,8 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             getFormattedDate()
             fetchNewRates()
-            checkIfCanRefresh()
             getLastConversionCurrencies()
+            checkIfCanRefresh()
         }
     }
 
@@ -42,6 +42,13 @@ class HomeScreenViewModel(
 
                 is HomeScreenContract.Event.SwitchConversionCurrencies -> {
                     switchConversionCurrencies()
+                }
+
+                is HomeScreenContract.Event.ConvertCurrencies -> {
+                    // Convert currencies
+
+                    // Save conversionCurrencies
+                    saveLastConversionCurrenciesUseCaseImpl(event.conversionCurrencies)
                 }
             }
         }
@@ -109,7 +116,7 @@ class HomeScreenViewModel(
     }
 
     private suspend fun getLastConversionCurrencies() {
-        val lastConversionCurrencies = getLastConversionCurrenciesUseCase()
+        val lastConversionCurrencies = getLastConversionCurrenciesUseCase(currentState.currencyList)
 
         setState {
             copy(
