@@ -48,14 +48,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import currencyapptest.composeapp.generated.resources.Res
 import currencyapptest.composeapp.generated.resources.switch_ic
-import domain.model.Currency
 import domain.model.CurrencyCode
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun CurrencyFlagButton(
     modifier: Modifier = Modifier,
-    currency: Currency,
+    currency: CurrencyCode,
     placeHolder: String,
     onClick: () -> Unit,
     animate: Boolean,
@@ -92,10 +91,10 @@ fun CurrencyFlagButton(
             ) {
                 val flag = remember(it) {
                     CurrencyCode.entries.first { code ->
-                        code.name == currency.code
+                        code.name == currency.name
                     }.flag
                 }
-                val code by remember { mutableStateOf(it.code) }
+                val name by remember { mutableStateOf(it.name) }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -110,7 +109,7 @@ fun CurrencyFlagButton(
                     Spacer(modifier = Modifier.width(4.dp))
 
                     Text(
-                        text = code,
+                        text = name,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )

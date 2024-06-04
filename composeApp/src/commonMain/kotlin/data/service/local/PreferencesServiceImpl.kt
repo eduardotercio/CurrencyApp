@@ -5,9 +5,9 @@ import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.coroutines.FlowSettings
 import com.russhwolf.settings.coroutines.toFlowSettings
-import domain.model.ConversionCurrencies
-import domain.model.Currency
+import domain.model.CurrencyType
 import domain.service.local.PreferencesService
+import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalSettingsApi::class)
 class PreferencesServiceImpl(
@@ -29,41 +29,41 @@ class PreferencesServiceImpl(
         )
     }
 
-    override suspend fun saveLastConversionCurrencies(conversionCurrencies: ConversionCurrencies) {
-        saveCurrencyCode(conversionCurrencies.source)
-        saveCurrencyCode(conversionCurrencies.target)
+    override suspend fun saveSelectedCurrency(currencyType: CurrencyType) {
+        if (currencyType is CurrencyType.SourceCurrency) {
+            flowSettings.putString(
+                key = SOURCE_CURRENCY_KEY,
+                value = currencyType.source.name
+            )
+        } else if (currencyType is CurrencyType.TargetCurrency) {
+            flowSettings.putString(
+                key = TARGET_CURRENCY_KEY,
+                value = currencyType.target.name
+            )
+        }
     }
 
-    private suspend fun saveCurrencyCode(currency: Currency) {
-        flowSettings.putString(
-            key = CURRENCY_KEY,
-            value = currency.code
+    override suspend fun getLastSourceSelected(): Flow<String> {
+        return flowSettings.getStringFlow(
+            key = SOURCE_CURRENCY_KEY,
+            defaultValue = DEFAULT_SOURCE_CURRENCY_CODE_VALUE
         )
     }
 
-    override suspend fun getLastConversionCurrencies(currenciesList: List<Currency>): ConversionCurrencies? {
-        val sourceCode = getCurrencyCode()
-        val targetCode = getCurrencyCode()
-
-        val source = currenciesList.firstOrNull { it.code == sourceCode }
-        val target = currenciesList.firstOrNull { it.code == targetCode }
-
-        return if (source == null || target == null) null
-        else ConversionCurrencies(source, target)
-    }
-
-    private suspend fun getCurrencyCode(): String {
-        return flowSettings.getString(
-            key = CURRENCY_KEY,
-            defaultValue = DEFAULT_CURRENCY_CODE_VALUE
+    override suspend fun getLastTargetSelected(): Flow<String> {
+        return flowSettings.getStringFlow(
+            key = TARGET_CURRENCY_KEY,
+            defaultValue = DEFAULT_TARGET_CURRENCY_CODE_VALUE
         )
     }
 
     private companion object {
         const val TIMESTAMP_KEY = "lastUpdated"
-        const val CURRENCY_KEY = "code"
+        const val SOURCE_CURRENCY_KEY = "source"
+        const val TARGET_CURRENCY_KEY = "target"
 
         const val DEFAULT_TIMESTAMP_VALUE = 0L
-        const val DEFAULT_CURRENCY_CODE_VALUE = "BRL"
+        const val DEFAULT_SOURCE_CURRENCY_CODE_VALUE = "BRL"
+        const val DEFAULT_TARGET_CURRENCY_CODE_VALUE = "USD"
     }
 }

@@ -13,8 +13,10 @@ import domain.service.local.PreferencesService
 import domain.service.remote.CurrencyApiService
 import domain.usecase.CurrentFormattedDateUseCase
 import domain.usecase.CurrentFormattedDateUseCaseImpl
-import domain.usecase.GetLastConversionCurrenciesUseCase
-import domain.usecase.GetLastConversionCurrenciesUseCaseImpl
+import domain.usecase.GetSavedSourceCurrencyCodeUseCase
+import domain.usecase.GetSavedSourceCurrencyCodeUseCaseImpl
+import domain.usecase.GetSavedTargetCurrencyCodeUseCase
+import domain.usecase.GetSavedTargetCurrencyCodeUseCaseImpl
 import domain.usecase.LatestExchangeRatesUseCase
 import domain.usecase.LatestExchangeRatesUseCaseImpl
 import domain.usecase.SaveLastConversionCurrenciesUseCase
@@ -42,6 +44,7 @@ val commonModules = module {
     factoryOf(::LatestExchangeRatesUseCaseImpl) bind LatestExchangeRatesUseCase::class
     factoryOf(::TimeFromLastRequestUseCaseImpl) bind TimeFromLastRequestUseCase::class
     factoryOf(::SaveLastRequestTimeUseCaseImpl) bind SaveLastRequestTimeUseCase::class
-    factoryOf(::GetLastConversionCurrenciesUseCaseImpl) bind GetLastConversionCurrenciesUseCase::class
+    factoryOf(::GetSavedSourceCurrencyCodeUseCaseImpl) bind GetSavedSourceCurrencyCodeUseCase::class
+    factoryOf(::GetSavedTargetCurrencyCodeUseCaseImpl) bind GetSavedTargetCurrencyCodeUseCase::class
     factoryOf(::SaveLastConversionCurrenciesUseCaseImpl) bind SaveLastConversionCurrenciesUseCase::class
 }

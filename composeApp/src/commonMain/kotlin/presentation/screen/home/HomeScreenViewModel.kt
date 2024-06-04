@@ -1,15 +1,20 @@
 package presentation.screen.home
 
 import androidx.lifecycle.viewModelScope
-import domain.model.ConversionCurrencies
+import domain.model.CurrencyCode
 import domain.model.RequestState
 import domain.usecase.CurrentFormattedDateUseCase
-import domain.usecase.GetLastConversionCurrenciesUseCase
+import domain.usecase.GetSavedSourceCurrencyCodeUseCase
+import domain.usecase.GetSavedTargetCurrencyCodeUseCase
 import domain.usecase.LatestExchangeRatesUseCase
-import domain.usecase.SaveLastConversionCurrenciesUseCaseImpl
+import domain.usecase.SaveLastConversionCurrenciesUseCase
 import domain.usecase.SaveLastRequestTimeUseCase
 import domain.usecase.TimeFromLastRequestUseCase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import presentation.base.BaseViewModel
 
 class HomeScreenViewModel(
@@ -17,8 +22,9 @@ class HomeScreenViewModel(
     private val getCurrentFormattedDateUseCase: CurrentFormattedDateUseCase,
     private val getTimeFromLastRequestUseCase: TimeFromLastRequestUseCase,
     private val saveLastRequestTimeUseCase: SaveLastRequestTimeUseCase,
-    private val getLastConversionCurrenciesUseCase: GetLastConversionCurrenciesUseCase,
-    private val saveLastConversionCurrenciesUseCaseImpl: SaveLastConversionCurrenciesUseCaseImpl
+    private val getSavedSourceCurrencyCodeUseCase: GetSavedSourceCurrencyCodeUseCase,
+    private val getSavedTargetCurrencyCodeUseCase: GetSavedTargetCurrencyCodeUseCase,
+    private val saveLastConversionCurrenciesUseCase: SaveLastConversionCurrenciesUseCase,
 ) : BaseViewModel<HomeScreenContract.Event, HomeScreenContract.State, HomeScreenContract.Effect>() {
     override fun setInitialState() = HomeScreenContract.State()
 
@@ -26,7 +32,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             getFormattedDate()
             fetchNewRates()
-            getLastConversionCurrencies()
+            getSavedSelectedCurrencies()
             checkIfCanRefresh()
         }
     }
@@ -48,7 +54,7 @@ class HomeScreenViewModel(
                     // Convert currencies
 
                     // Save conversionCurrencies
-                    saveLastConversionCurrenciesUseCaseImpl(event.conversionCurrencies)
+                    saveLastConversionCurrenciesUseCase(event.currencyType)
                 }
             }
         }
@@ -64,32 +70,34 @@ class HomeScreenViewModel(
         }
     }
 
-    private suspend fun fetchNewRates(requestToApi: Boolean = false) {
-        val getFromLocal = if (requestToApi) {
-            false
-        } else {
-            val timeFromLastRequest = getTimeFromLastRequestUseCase()
-            timeFromLastRequest < ONE_DAY
-        }
-
-        val response = getLatestExchangeRatesUseCase(
-            getFromLocal = getFromLocal
-        )
-        when (response) {
-            is RequestState.Success -> {
-                setState {
-                    copy(
-                        currencyList = this.currencyList
-                    )
-                }
-                if (!getFromLocal) {
-                    saveTimestamp()
-                }
+    private suspend fun fetchNewRates(requestToApi: Boolean = false) = withContext(Dispatchers.IO) {
+        launch {
+            val getFromLocal = if (requestToApi) {
+                false
+            } else {
+                val timeFromLastRequest = getTimeFromLastRequestUseCase()
+                timeFromLastRequest < ONE_DAY
             }
 
-            is RequestState.Loading -> TODO()
-            is RequestState.Idle -> TODO()
-            is RequestState.Error -> TODO()
+            val response = getLatestExchangeRatesUseCase(
+                getFromLocal = getFromLocal
+            )
+            when (response) {
+                is RequestState.Success -> {
+                    setState {
+                        copy(
+                            currencyValuesList = this.currencyValuesList
+                        )
+                    }
+                    if (!getFromLocal) {
+                        saveTimestamp()
+                    }
+                }
+
+                is RequestState.Loading -> TODO()
+                is RequestState.Idle -> TODO()
+                is RequestState.Error -> TODO()
+            }
         }
     }
 
@@ -115,26 +123,40 @@ class HomeScreenViewModel(
         }
     }
 
-    private suspend fun getLastConversionCurrencies() {
-        val lastConversionCurrencies = getLastConversionCurrenciesUseCase(currentState.currencyList)
+    private suspend fun getSavedSelectedCurrencies() = withContext(Dispatchers.IO) {
+        launch {
+            getSavedSourceCurrencyCodeUseCase().collectLatest { code ->
+                val source = CurrencyCode.entries.find { it.name == code }
+                    ?: currentState.source
+                withContext(Dispatchers.Main) {
+                    setState {
+                        copy(source = source)
+                    }
+                }
+            }
+        }
 
-        setState {
-            copy(
-                conversionCurrencies = lastConversionCurrencies
-            )
+        launch {
+            getSavedTargetCurrencyCodeUseCase().collectLatest { code ->
+                val target = CurrencyCode.entries.find { it.name == code }
+                    ?: currentState.target
+                withContext(Dispatchers.Main) {
+                    setState {
+                        copy(target = target)
+                    }
+                }
+            }
         }
     }
 
     private fun switchConversionCurrencies() {
-        val currentSouce = currentState.conversionCurrencies.source
-        val currentTarget = currentState.conversionCurrencies.target
+        val currentSouce = currentState.source
+        val currentTarget = currentState.target
 
         setState {
             copy(
-                conversionCurrencies = ConversionCurrencies(
-                    source = currentTarget,
-                    target = currentSouce
-                )
+                source = currentTarget,
+                target = currentSouce
             )
         }
     }

@@ -1,12 +1,12 @@
 package domain.usecase
 
-import domain.model.ConversionCurrencies
+import domain.model.CurrencyType
 import domain.repository.CurrencyRepository
 
 class SaveLastConversionCurrenciesUseCaseImpl(
     private val repository: CurrencyRepository
 ) : SaveLastConversionCurrenciesUseCase {
-    override suspend fun invoke(conversionCurrencies: ConversionCurrencies) {
-        repository.saveLastConversionCurrencies(conversionCurrencies)
+    override suspend fun invoke(currencyType: CurrencyType) {
+        repository.saveSelectedCurrency(currencyType)
     }
 }

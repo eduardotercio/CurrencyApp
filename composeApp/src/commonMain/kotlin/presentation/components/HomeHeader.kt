@@ -46,7 +46,8 @@ fun HomeHeader(
     onRefreshButtonClicked: () -> Unit,
     onSwitchButtonClicked: () -> Unit
 ) {
-    val conversionCurrencies = state.conversionCurrencies
+    val source = state.source
+    val target = state.target
 
     Column(
         modifier = Modifier
@@ -68,7 +69,7 @@ fun HomeHeader(
             var animate by remember { mutableStateOf(false) }
             CurrencyFlagButton(
                 modifier = Modifier.weight(1f),
-                currency = conversionCurrencies.source,
+                currency = source,
                 placeHolder = stringResource(Res.string.from_text),
                 onClick = {},
                 animate = animate
@@ -84,7 +85,7 @@ fun HomeHeader(
 
             CurrencyFlagButton(
                 modifier = Modifier.weight(1f),
-                currency = conversionCurrencies.target,
+                currency = target,
                 placeHolder = stringResource(Res.string.to_text),
                 onClick = {},
                 animate = animate

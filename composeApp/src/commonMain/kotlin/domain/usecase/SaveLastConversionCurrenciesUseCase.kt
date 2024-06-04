@@ -1,8 +1,8 @@
 package domain.usecase
 
-import domain.model.ConversionCurrencies
+import domain.model.CurrencyType
 
 interface SaveLastConversionCurrenciesUseCase {
 
-    suspend operator fun invoke(conversionCurrencies: ConversionCurrencies)
+    suspend operator fun invoke(currencyType: CurrencyType)
 }
