@@ -1,9 +1,10 @@
 package domain.repository
 
-import domain.model.ConversionCurrencies
 import domain.model.Currency
+import domain.model.CurrencyType
 import domain.model.DataResponse
 import domain.model.RequestState
+import kotlinx.coroutines.flow.Flow
 
 interface CurrencyRepository {
 
@@ -15,7 +16,9 @@ interface CurrencyRepository {
 
     suspend fun saveLastRequestTime(millisUpdated: Long)
 
-    suspend fun getLastConversionCurrencies(currenciesList: List<Currency>): ConversionCurrencies?
+    suspend fun getSavedSourceCurrencyCode(): Flow<String>
 
-    suspend fun saveLastConversionCurrencies(conversionCurrencies: ConversionCurrencies)
+    suspend fun getSavedTargetCurrencyCode(): Flow<String>
+
+    suspend fun saveSelectedCurrency(currencyType: CurrencyType)
 }

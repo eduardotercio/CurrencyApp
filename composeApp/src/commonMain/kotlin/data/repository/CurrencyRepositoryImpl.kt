@@ -1,13 +1,14 @@
 package data.repository
 
-import domain.model.ConversionCurrencies
 import domain.model.Currency
+import domain.model.CurrencyType
 import domain.model.DataResponse
 import domain.model.RequestState
 import domain.repository.CurrencyRepository
 import domain.service.local.MongoDBService
 import domain.service.local.PreferencesService
 import domain.service.remote.CurrencyApiService
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
 
@@ -46,12 +47,16 @@ class CurrencyRepositoryImpl(
     override suspend fun saveLastRequestTime(millisUpdated: Long) =
         preferences.saveLastRequestTime(millisUpdated)
 
-    override suspend fun getLastConversionCurrencies(currenciesList: List<Currency>): ConversionCurrencies? {
-        return preferences.getLastConversionCurrencies(currenciesList)
+    override suspend fun getSavedSourceCurrencyCode(): Flow<String> {
+        return preferences.getLastSourceSelected()
     }
 
-    override suspend fun saveLastConversionCurrencies(conversionCurrencies: ConversionCurrencies) {
-        preferences.saveLastConversionCurrencies(conversionCurrencies)
+    override suspend fun getSavedTargetCurrencyCode(): Flow<String> {
+        return preferences.getLastTargetSelected()
+    }
+
+    override suspend fun saveSelectedCurrency(currencyType: CurrencyType) {
+        preferences.saveSelectedCurrency(currencyType)
     }
 
 }

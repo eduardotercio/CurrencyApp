@@ -14,7 +14,13 @@ class TimeFromLastRequestUseCaseImpl(
         val currentDateTime = parseFromMillis(currentTimestamp)
         val lastRequestDateTime = parseFromMillis(lastRequestTimestamp)
 
-        val daysDifference = (currentDateTime.date.dayOfYear - lastRequestDateTime.date.dayOfYear)
+        if (lastRequestDateTime.year != currentDateTime.year)
+            return ONE.toDouble()
+        val daysDifference = (currentDateTime.dayOfYear - lastRequestDateTime.dayOfYear)
         return daysDifference.toDouble()
+    }
+
+    private companion object {
+        const val ONE = 1
     }
 }

@@ -29,6 +29,7 @@ import currencyapptest.composeapp.generated.resources.from_text
 import currencyapptest.composeapp.generated.resources.refresh_ic
 import currencyapptest.composeapp.generated.resources.refresh_the_app
 import currencyapptest.composeapp.generated.resources.to_text
+import domain.model.CurrencyType
 import freshColor
 import headerColor
 import org.jetbrains.compose.resources.painterResource
@@ -40,9 +41,11 @@ import staleColor
 fun HomeHeader(
     state: HomeScreenContract.State,
     onRefreshButtonClicked: () -> Unit,
-    onSwitchButtonClicked: () -> Unit
+    onSwitchButtonClicked: () -> Unit,
+    onCurrencyButtonClicked: (CurrencyType) -> Unit,
 ) {
-    val conversionCurrencies = state.conversionCurrencies
+    val source = state.source
+    val target = state.target
 
     Column(
         modifier = Modifier
@@ -61,23 +64,29 @@ fun HomeHeader(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            CurrencyFlagButton(
+            CurrencyDisplayButton(
                 modifier = Modifier.weight(1f),
-                currency = conversionCurrencies.source,
+                currency = source,
                 placeHolder = stringResource(Res.string.from_text),
-                onClick = {}
+                onClick = {
+                    onCurrencyButtonClicked(CurrencyType.SourceCurrency(source))
+                }
             )
 
             SwitchButton(
                 modifier = Modifier.padding(top = 24.dp),
-                onClick = onSwitchButtonClicked
+                onClick = {
+                    onSwitchButtonClicked()
+                }
             )
 
-            CurrencyFlagButton(
+            CurrencyDisplayButton(
                 modifier = Modifier.weight(1f),
-                currency = conversionCurrencies.target,
+                currency = target,
                 placeHolder = stringResource(Res.string.to_text),
-                onClick = {}
+                onClick = {
+                    onCurrencyButtonClicked(CurrencyType.TargetCurrency(target))
+                }
             )
         }
         Spacer(modifier = Modifier.height(8.dp))

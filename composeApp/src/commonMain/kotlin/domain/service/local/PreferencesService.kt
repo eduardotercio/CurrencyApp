@@ -1,14 +1,16 @@
 package domain.service.local
 
-import domain.model.ConversionCurrencies
-import domain.model.Currency
+import domain.model.CurrencyType
+import kotlinx.coroutines.flow.Flow
 
 interface PreferencesService {
 
     suspend fun saveLastRequestTime(millisUpdated: Long)
     suspend fun getLastRequestTime(): Long
 
-    suspend fun saveLastConversionCurrencies(conversionCurrencies: ConversionCurrencies)
+    suspend fun saveSelectedCurrency(currencyType: CurrencyType)
 
-    suspend fun getLastConversionCurrencies(currenciesList: List<Currency>): ConversionCurrencies?
+    suspend fun getLastSourceSelected(): Flow<String>
+
+    suspend fun getLastTargetSelected(): Flow<String>
 }
