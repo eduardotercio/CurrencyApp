@@ -5,16 +5,19 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -37,14 +40,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import domain.model.Currency
 import domain.model.CurrencyCode
 import domain.model.CurrencyType
+import org.jetbrains.compose.resources.painterResource
 import primaryColor
 import surfaceColor
 import textColor
@@ -133,23 +140,6 @@ fun CurrencyPickerDialog(
                             val code = CurrencyCode.valueOf(currency.code)
                             val isSelected = selectedCurrencyCode.name == currency.code
 
-                            val saturation = remember { Animatable(if (isSelected) 1f else 0f) }
-
-                            LaunchedEffect(isSelected) {
-                                saturation.animateTo(if (isSelected) 1f else 0f)
-                            }
-
-                            val flagColorMatrix = remember(saturation.value) {
-                                ColorMatrix().apply {
-                                    setToSaturation(saturation.value)
-                                }
-                            }
-
-                            val textAlpha by animateFloatAsState(
-                                targetValue = if (isSelected) 1f else 0.5f,
-                                animationSpec = tween(durationMillis = 300)
-                            )
-
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -157,12 +147,11 @@ fun CurrencyPickerDialog(
                                     .clickable { selectedCurrencyCode = code }
                                     .padding(all = 8.dp),
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                CurrencyFlag(
+                                CurrencyItem(
                                     currencyCode = code,
-                                    flagColorMatrix = flagColorMatrix,
-                                    textAlpha = textAlpha,
+                                    isSelected = isSelected
                                 )
                                 CurrencyCodeSelector(
                                     isSelected = isSelected
@@ -196,8 +185,39 @@ fun CurrencyPickerDialog(
 }
 
 @Composable
-fun CurrencyItem() {
-    
+fun CurrencyItem(currencyCode: CurrencyCode, isSelected: Boolean) {
+    val saturation = remember { Animatable(if (isSelected) 1f else 0f) }
+
+    LaunchedEffect(isSelected) {
+        saturation.animateTo(if (isSelected) 1f else 0f)
+    }
+
+    val flagColorMatrix = remember(saturation.value) {
+        ColorMatrix().apply {
+            setToSaturation(saturation.value)
+        }
+    }
+
+    val textAlpha by animateFloatAsState(
+        targetValue = if (isSelected) 1f else 0.5f,
+        animationSpec = tween(durationMillis = 300)
+    )
+
+    Row {
+        Image(
+            modifier = Modifier.size(20.dp),
+            painter = painterResource(currencyCode.flag),
+            contentDescription = null,
+            colorFilter = ColorFilter.colorMatrix(flagColorMatrix)
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            modifier = Modifier.alpha(textAlpha),
+            text = currencyCode.name,
+            fontWeight = FontWeight.Bold,
+            color = textColor
+        )
+    }
 }
 
 @Composable
