@@ -1,45 +1,67 @@
 package presentation.screen.home
 
 import androidx.lifecycle.viewModelScope
+import domain.model.Currency
 import domain.model.CurrencyCode
 import domain.model.RequestState
 import domain.usecase.CurrentFormattedDateUseCase
 import domain.usecase.GetSavedSourceCurrencyCodeUseCase
 import domain.usecase.GetSavedTargetCurrencyCodeUseCase
 import domain.usecase.LatestExchangeRatesUseCase
-import domain.usecase.SaveLastConversionCurrenciesUseCase
 import domain.usecase.SaveLastRequestTimeUseCase
+import domain.usecase.SaveLatestExchangeRatesUseCase
+import domain.usecase.SaveSelectedCurrencyUseCase
 import domain.usecase.TimeFromLastRequestUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import presentation.base.BaseViewModel
+import kotlin.time.measureTime
 
 class HomeScreenViewModel(
     private val getLatestExchangeRatesUseCase: LatestExchangeRatesUseCase,
+    private val saveLatestExchangeRatesUseCase: SaveLatestExchangeRatesUseCase,
     private val getCurrentFormattedDateUseCase: CurrentFormattedDateUseCase,
     private val getTimeFromLastRequestUseCase: TimeFromLastRequestUseCase,
     private val saveLastRequestTimeUseCase: SaveLastRequestTimeUseCase,
     private val getSavedSourceCurrencyCodeUseCase: GetSavedSourceCurrencyCodeUseCase,
     private val getSavedTargetCurrencyCodeUseCase: GetSavedTargetCurrencyCodeUseCase,
-    private val saveLastConversionCurrenciesUseCase: SaveLastConversionCurrenciesUseCase,
+    private val saveSelectedCurrencyUseCase: SaveSelectedCurrencyUseCase,
 ) : BaseViewModel<HomeScreenContract.Event, HomeScreenContract.State, HomeScreenContract.Effect>() {
     override fun setInitialState() = HomeScreenContract.State()
 
-    init {
+    private suspend fun initializeScreen() {
         viewModelScope.launch {
-            getFormattedDate()
-            fetchNewRates()
-            getSavedSelectedCurrencies()
-            checkIfCanRefresh()
+            val executionTime = measureTime {
+                launch { getSavedSelectedCurrencies() }
+                getFormattedDate()
+                fetchNewRates()
+                checkIfCanRefresh()
+            }.inWholeMilliseconds
+
+            val remainingDelay = (2000 - executionTime).coerceAtLeast(0)
+            delay(remainingDelay)
+
+            withContext(Dispatchers.Main) {
+                setState {
+                    copy(
+                        isLoading = false
+                    )
+                }
+            }
         }
     }
 
     override fun handleEvents(event: HomeScreenContract.Event) {
         viewModelScope.launch {
             when (event) {
+                is HomeScreenContract.Event.InitializeScreen -> {
+                    initializeScreen()
+                }
+
                 is HomeScreenContract.Event.RefreshData -> {
                     fetchNewRates(
                         requestToApi = true
@@ -50,23 +72,34 @@ class HomeScreenViewModel(
                     switchConversionCurrencies()
                 }
 
-                is HomeScreenContract.Event.ConvertCurrencies -> {
-                    // Convert currencies
+                is HomeScreenContract.Event.SaveSelectedCurrency -> {
+                    saveSelectedCurrencyUseCase(event.currencyType)
+                }
 
-                    // Save conversionCurrencies
-                    saveLastConversionCurrenciesUseCase(event.currencyType)
+                is HomeScreenContract.Event.ConvertSourceCurrency -> {
+
+                }
+
+                is HomeScreenContract.Event.OnDialogOpened -> {
+                    setEffect {
+                        HomeScreenContract.Effect.OpenCurrencyPickerDialog
+                    }
                 }
             }
         }
     }
 
-    private fun getFormattedDate() {
-        val currentFormattedDate = getCurrentFormattedDateUseCase()
+    private suspend fun getFormattedDate() = withContext(Dispatchers.IO) {
+        launch {
+            val currentFormattedDate = getCurrentFormattedDateUseCase()
 
-        setState {
-            copy(
-                currentFormattedDate = currentFormattedDate
-            )
+            withContext(Dispatchers.Main) {
+                setState {
+                    copy(
+                        currentFormattedDate = currentFormattedDate
+                    )
+                }
+            }
         }
     }
 
@@ -86,10 +119,11 @@ class HomeScreenViewModel(
                 is RequestState.Success -> {
                     setState {
                         copy(
-                            currencyValuesList = this.currencyValuesList
+                            currencyValuesList = response.data.data
                         )
                     }
                     if (!getFromLocal) {
+                        saveCurrency(response.data.data)
                         saveTimestamp()
                     }
                 }
@@ -101,14 +135,18 @@ class HomeScreenViewModel(
         }
     }
 
-    private suspend fun checkIfCanRefresh() {
-        val halfDayPassed = getTimeFromLastRequestUseCase() > HALF_DAY
+    private suspend fun checkIfCanRefresh() = withContext(Dispatchers.IO) {
+        launch {
+            val halfDayPassed = getTimeFromLastRequestUseCase() > HALF_DAY
 
-        if (halfDayPassed) {
-            setState {
-                copy(
-                    isRefreshEnabled = true
-                )
+            if (halfDayPassed) {
+                withContext(Dispatchers.Main) {
+                    setState {
+                        copy(
+                            isRefreshEnabled = true
+                        )
+                    }
+                }
             }
         }
     }
@@ -121,6 +159,12 @@ class HomeScreenViewModel(
                 isRefreshEnabled = false
             )
         }
+    }
+
+    private suspend fun saveCurrency(list: List<Currency>) {
+        saveLatestExchangeRatesUseCase.invoke(
+            currencies = list.toTypedArray()
+        )
     }
 
     private suspend fun getSavedSelectedCurrencies() = withContext(Dispatchers.IO) {
@@ -147,6 +191,8 @@ class HomeScreenViewModel(
                 }
             }
         }
+
+
     }
 
     private fun switchConversionCurrencies() {

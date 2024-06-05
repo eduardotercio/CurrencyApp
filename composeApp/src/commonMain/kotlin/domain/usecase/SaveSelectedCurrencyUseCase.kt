@@ -2,7 +2,7 @@ package domain.usecase
 
 import domain.model.CurrencyType
 
-interface SaveLastConversionCurrenciesUseCase {
+interface SaveSelectedCurrencyUseCase {
 
     suspend operator fun invoke(currencyType: CurrencyType)
 }

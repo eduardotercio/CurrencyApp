@@ -19,10 +19,12 @@ import domain.usecase.GetSavedTargetCurrencyCodeUseCase
 import domain.usecase.GetSavedTargetCurrencyCodeUseCaseImpl
 import domain.usecase.LatestExchangeRatesUseCase
 import domain.usecase.LatestExchangeRatesUseCaseImpl
-import domain.usecase.SaveLastConversionCurrenciesUseCase
-import domain.usecase.SaveLastConversionCurrenciesUseCaseImpl
 import domain.usecase.SaveLastRequestTimeUseCase
 import domain.usecase.SaveLastRequestTimeUseCaseImpl
+import domain.usecase.SaveLatestExchangeRatesUseCase
+import domain.usecase.SaveLatestExchangeRatesUseCaseImpl
+import domain.usecase.SaveSelectedCurrencyUseCase
+import domain.usecase.SaveSelectedCurrencyUseCaseImpl
 import domain.usecase.TimeFromLastRequestUseCase
 import domain.usecase.TimeFromLastRequestUseCaseImpl
 import org.koin.core.module.dsl.factoryOf
@@ -42,9 +44,10 @@ val commonModules = module {
     // Domain
     factoryOf(::CurrentFormattedDateUseCaseImpl) bind CurrentFormattedDateUseCase::class
     factoryOf(::LatestExchangeRatesUseCaseImpl) bind LatestExchangeRatesUseCase::class
+    factoryOf(::SaveLatestExchangeRatesUseCaseImpl) bind SaveLatestExchangeRatesUseCase::class
     factoryOf(::TimeFromLastRequestUseCaseImpl) bind TimeFromLastRequestUseCase::class
     factoryOf(::SaveLastRequestTimeUseCaseImpl) bind SaveLastRequestTimeUseCase::class
     factoryOf(::GetSavedSourceCurrencyCodeUseCaseImpl) bind GetSavedSourceCurrencyCodeUseCase::class
     factoryOf(::GetSavedTargetCurrencyCodeUseCaseImpl) bind GetSavedTargetCurrencyCodeUseCase::class
-    factoryOf(::SaveLastConversionCurrenciesUseCaseImpl) bind SaveLastConversionCurrenciesUseCase::class
+    factoryOf(::SaveSelectedCurrencyUseCaseImpl) bind SaveSelectedCurrencyUseCase::class
 }

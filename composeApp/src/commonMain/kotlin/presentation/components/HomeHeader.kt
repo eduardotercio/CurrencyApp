@@ -17,10 +17,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +29,7 @@ import currencyapptest.composeapp.generated.resources.from_text
 import currencyapptest.composeapp.generated.resources.refresh_ic
 import currencyapptest.composeapp.generated.resources.refresh_the_app
 import currencyapptest.composeapp.generated.resources.to_text
+import domain.model.CurrencyType
 import freshColor
 import headerColor
 import org.jetbrains.compose.resources.painterResource
@@ -44,7 +41,8 @@ import staleColor
 fun HomeHeader(
     state: HomeScreenContract.State,
     onRefreshButtonClicked: () -> Unit,
-    onSwitchButtonClicked: () -> Unit
+    onSwitchButtonClicked: () -> Unit,
+    onCurrencyButtonClicked: (CurrencyType) -> Unit,
 ) {
     val source = state.source
     val target = state.target
@@ -66,29 +64,29 @@ fun HomeHeader(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            var animate by remember { mutableStateOf(false) }
-            CurrencyFlagButton(
+            CurrencyDisplayButton(
                 modifier = Modifier.weight(1f),
                 currency = source,
                 placeHolder = stringResource(Res.string.from_text),
-                onClick = {},
-                animate = animate
+                onClick = {
+                    onCurrencyButtonClicked(CurrencyType.SourceCurrency(source))
+                }
             )
 
             SwitchButton(
                 modifier = Modifier.padding(top = 24.dp),
                 onClick = {
-                    animate = true
                     onSwitchButtonClicked()
                 }
             )
 
-            CurrencyFlagButton(
+            CurrencyDisplayButton(
                 modifier = Modifier.weight(1f),
                 currency = target,
                 placeHolder = stringResource(Res.string.to_text),
-                onClick = {},
-                animate = animate
+                onClick = {
+                    onCurrencyButtonClicked(CurrencyType.TargetCurrency(target))
+                }
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
