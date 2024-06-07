@@ -173,14 +173,6 @@ fun InputValueButton(
         onValueChange = { newValue ->
             onValueChanged(newValue)
         },
-        textStyle = TextStyle(
-            textAlign = TextAlign.Center,
-            color = Color.White
-        ),
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Decimal
-        ),
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.White.copy(alpha = 0.05f),
             unfocusedContainerColor = Color.White.copy(alpha = 0.05f),
@@ -190,6 +182,14 @@ fun InputValueButton(
             disabledIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             cursorColor = Color.White
+        ),
+        textStyle = TextStyle(
+            textAlign = TextAlign.Center,
+            color = Color.White
+        ),
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Decimal
         )
     )
 }
