@@ -5,7 +5,9 @@ struct iOSApp: App {
 
 	var body: some Scene {
 		WindowGroup {
-			ContentView().ignoreSafeArea
+			ContentView()
+            .ignoresSafeArea(.keyboard) // Compose has own keyboard handler
+            .edgesIgnoringSafeArea(.all)
 		}
 	}
 }
