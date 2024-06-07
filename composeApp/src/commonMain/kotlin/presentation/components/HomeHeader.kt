@@ -31,6 +31,7 @@ import currencyapptest.composeapp.generated.resources.refresh_the_app
 import currencyapptest.composeapp.generated.resources.to_text
 import domain.model.CurrencyType
 import freshColor
+import getPlatform
 import headerColor
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -53,6 +54,7 @@ fun HomeHeader(
             .fillMaxWidth()
             .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
             .background(headerColor)
+            .padding(top = if (getPlatform().name == "Android") 0.dp else 20.dp)
             .padding(24.dp)
     ) {
         Spacer(modifier = Modifier.height(24.dp))
