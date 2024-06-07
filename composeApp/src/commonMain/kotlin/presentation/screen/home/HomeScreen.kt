@@ -9,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
@@ -19,19 +20,19 @@ import presentation.components.HomeBody
 import presentation.components.HomeHeader
 import surfaceColor
 
+private const val DEFAULT_VALUE = "100.00"
 
 @Composable
 fun HomeScreen(navController: NavController) {
     val viewModel = koinViewModel<HomeScreenViewModel>()
     val state by viewModel.state.collectAsState()
+    fun sendEvent(event: HomeScreenContract.Event) = viewModel.setEvent(event)
 
     LaunchedEffect(true) {
-        viewModel.setEvent(HomeScreenContract.Event.InitializeScreen)
+        sendEvent(HomeScreenContract.Event.InitializeScreen)
     }
 
     var isDialogOpen by remember { mutableStateOf(false) }
-    var currencyType: CurrencyType by remember { mutableStateOf(CurrencyType.None) }
-
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
@@ -41,6 +42,9 @@ fun HomeScreen(navController: NavController) {
             }
         }
     }
+
+    var currencyType: CurrencyType by remember { mutableStateOf(CurrencyType.None) }
+    var amount by rememberSaveable { mutableStateOf(DEFAULT_VALUE) }
 
     if (isDialogOpen) {
         CurrencyPickerDialog(
@@ -78,19 +82,24 @@ fun HomeScreen(navController: NavController) {
         if (!state.isLoading) {
             HomeHeader(
                 state = state,
-                onRefreshButtonClicked = {
-                    viewModel.setEvent(HomeScreenContract.Event.RefreshData)
-                },
-                onSwitchButtonClicked = {
-                    viewModel.setEvent(HomeScreenContract.Event.SwitchConversionCurrencies)
+                sendEvent = { event ->
+                    sendEvent(event)
                 },
                 onCurrencyButtonClicked = {
-                    viewModel.setEvent(HomeScreenContract.Event.OnDialogOpened)
+                    sendEvent(HomeScreenContract.Event.OnDialogOpened)
                     currencyType = it
                 },
+                amount = amount,
+                onAmountValueChanged = {
+                    amount = it
+                }
             )
             HomeBody(
-                state = state
+                state = state,
+                sendEvent = { event ->
+                    viewModel.setEvent(event)
+                },
+                amount = amount
             )
         }
     }
