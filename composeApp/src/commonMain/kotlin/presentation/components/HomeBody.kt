@@ -59,7 +59,8 @@ fun HomeBody(
         modifier = Modifier
             .fillMaxWidth()
             .navigationBarsPadding()
-            .imePadding(),
+            .imePadding()
+            .padding(12.dp),
         verticalArrangement = Arrangement.Center
     ) {
         Column(
