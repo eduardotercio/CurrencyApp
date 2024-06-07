@@ -1,14 +1,38 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+# Currency Converter App
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
+This app is a Compose Multiplatform application developed during a course. Its primary function is to convert currencies using data from an API, which provides exchange rates for different countries. Users can choose from over a hundred available currencies to convert. To minimize the number of requests, these currencies are also stored locally.
 
-* `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform, 
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+## Features
 
+- **API Integration**: Fetches the latest exchange rates from a reliable currency API.
+- **Currency Conversion**: Allows users to convert between over a hundred different currencies.
+- **Local Persistence**: Stores currency data locally to reduce the number of API requests and enhance performance.
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+## Learning Experience
+
+This project was a significant learning experience as it was my first venture into building a Compose Multiplatform app. I went beyond the course material by:
+
+- **Custom Logic**: Modifying and creating custom logic to fit my personal coding style.
+- **Additional Libraries**: Integrating additional libraries such as native ViewModel, Lifecycle, and Navigation, instead of using Voyager as taught in the course.
+- **UseCases and Repositories**: Building use cases and repositories to manage network and local data operations.
+- **MVI Architecture**: Implementing Model-View-Intent (MVI) architecture for better state management.
+
+## Technologies Used
+
+- **Compose Multiplatform**: For building UI across different platforms.
+- **Native ViewModel and Lifecycle**: For managing UI-related data in a lifecycle-conscious way.
+- **Kotlin Coroutines**: For asynchronous programming.
+- **Mongo Realm Database**: For local data persistence.
+
+## Project Structure
+
+- **API Layer**: Handles all API calls and network operations.
+- **Database Layer**: Using Realm as database and also Settings Library as preferences.
+- **Repository Layer**: Manages data operations, deciding whether to fetch data from the API or local database.
+- **UseCases**: Encapsulates business logic for various features.
+- **ViewModel**: Connects the UI with the business logic.
+- **UI Layer**: Built using Jetpack Compose for a modern, declarative UI.
+
+## Contact
+
+Eduardo Tercio - [GitHub](https://www.linkedin.com/in/eduardo-tercio/) - dudubezerra33@gmail.com
