@@ -20,7 +20,9 @@ object HomeScreenContract {
             val currencyType: CurrencyType
         ) : Event
 
-        data object ConvertSourceCurrency : Event
+        data class ConvertSourceToTargetCurrency(
+            val amount: Double
+        ) : Event
 
         data object OnDialogOpened : Event
     }
@@ -34,7 +36,8 @@ object HomeScreenContract {
         val currencyValuesList: List<Currency> = listOf(),
         val currentFormattedDate: String = "",
         val isRefreshEnabled: Boolean = false,
-        val source: CurrencyCode = CurrencyCode.BRL,
-        val target: CurrencyCode = CurrencyCode.USD,
+        val sourceCurrency: CurrencyCode = CurrencyCode.BRL,
+        val targetCurrency: CurrencyCode = CurrencyCode.USD,
+        val convertedAmount: Double = 0.0
     ) : UiState
 }

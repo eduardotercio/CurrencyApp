@@ -11,6 +11,8 @@ import domain.repository.CurrencyRepository
 import domain.service.local.MongoDBService
 import domain.service.local.PreferencesService
 import domain.service.remote.CurrencyApiService
+import domain.usecase.ConvertCurrenciesUseCase
+import domain.usecase.ConvertCurrenciesUseCaseImpl
 import domain.usecase.CurrentFormattedDateUseCase
 import domain.usecase.CurrentFormattedDateUseCaseImpl
 import domain.usecase.GetSavedSourceCurrencyCodeUseCase
@@ -50,4 +52,5 @@ val commonModules = module {
     factoryOf(::GetSavedSourceCurrencyCodeUseCaseImpl) bind GetSavedSourceCurrencyCodeUseCase::class
     factoryOf(::GetSavedTargetCurrencyCodeUseCaseImpl) bind GetSavedTargetCurrencyCodeUseCase::class
     factoryOf(::SaveSelectedCurrencyUseCaseImpl) bind SaveSelectedCurrencyUseCase::class
+    factoryOf(::ConvertCurrenciesUseCaseImpl) bind ConvertCurrenciesUseCase::class
 }

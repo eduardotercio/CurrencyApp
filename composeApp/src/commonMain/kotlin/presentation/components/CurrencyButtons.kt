@@ -45,13 +45,13 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import currencyapptest.composeapp.generated.resources.Res
 import currencyapptest.composeapp.generated.resources.switch_ic
 import domain.model.CurrencyCode
 import org.jetbrains.compose.resources.painterResource
+import presentation.screen.home.HomeScreenContract
 
 @Composable
 fun CurrencyDisplayButton(
@@ -132,7 +132,7 @@ fun CurrencyFlag(
 @Composable
 fun SwitchButton(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    sendEvent: (HomeScreenContract.Event) -> Unit
 ) {
     var animatedStarted by remember { mutableStateOf(false) }
     val animatedRotation by animateFloatAsState(
@@ -147,7 +147,7 @@ fun SwitchButton(
             },
         onClick = {
             animatedStarted = !animatedStarted
-            onClick()
+            sendEvent(HomeScreenContract.Event.SwitchConversionCurrencies)
         }
     ) {
         Icon(
@@ -159,16 +159,19 @@ fun SwitchButton(
 }
 
 @Composable
-fun InputValueButton() {
-    var value by remember { mutableStateOf(TextFieldValue("$DEFAULT_VALUE")) }
+fun InputValueButton(
+    amount: String,
+    onValueChanged: (String) -> Unit
+) {
+
     TextField(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(size = 8.dp))
             .animateContentSize(),
-        value = value,
+        value = amount,
         onValueChange = { newValue ->
-            value = newValue
+            onValueChanged(newValue)
         },
         textStyle = TextStyle(
             textAlign = TextAlign.Center,
@@ -190,5 +193,3 @@ fun InputValueButton() {
         )
     )
 }
-
-private const val DEFAULT_VALUE = 100.00

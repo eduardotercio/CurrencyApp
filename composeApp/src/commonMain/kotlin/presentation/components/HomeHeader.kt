@@ -40,12 +40,13 @@ import staleColor
 @Composable
 fun HomeHeader(
     state: HomeScreenContract.State,
-    onRefreshButtonClicked: () -> Unit,
-    onSwitchButtonClicked: () -> Unit,
+    sendEvent: (HomeScreenContract.Event) -> Unit,
     onCurrencyButtonClicked: (CurrencyType) -> Unit,
+    amount: String,
+    onAmountValueChanged: (String) -> Unit
 ) {
-    val source = state.source
-    val target = state.target
+    val source = state.sourceCurrency
+    val target = state.targetCurrency
 
     Column(
         modifier = Modifier
@@ -57,7 +58,7 @@ fun HomeHeader(
         Spacer(modifier = Modifier.height(24.dp))
         RatesStatus(
             state = state,
-            onRefreshButtonClicked = onRefreshButtonClicked
+            sendEvent = sendEvent
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -75,9 +76,7 @@ fun HomeHeader(
 
             SwitchButton(
                 modifier = Modifier.padding(top = 24.dp),
-                onClick = {
-                    onSwitchButtonClicked()
-                }
+                sendEvent = sendEvent
             )
 
             CurrencyDisplayButton(
@@ -90,7 +89,10 @@ fun HomeHeader(
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
-        InputValueButton()
+        InputValueButton(
+            amount = amount,
+            onValueChanged = onAmountValueChanged
+        )
     }
 
 }
@@ -98,7 +100,7 @@ fun HomeHeader(
 @Composable
 fun RatesStatus(
     state: HomeScreenContract.State,
-    onRefreshButtonClicked: () -> Unit
+    sendEvent: (HomeScreenContract.Event) -> Unit
 ) {
     val dateTime = state.currentFormattedDate
     val isRefreshEnabled = state.isRefreshEnabled
@@ -138,7 +140,7 @@ fun RatesStatus(
             }
         }
         if (isRefreshEnabled) {
-            IconButton(onClick = onRefreshButtonClicked) {
+            IconButton(onClick = { sendEvent(HomeScreenContract.Event.RefreshData) }) {
                 Icon(
                     modifier = Modifier.size(24.dp),
                     painter = painterResource(Res.drawable.refresh_ic),

@@ -1,5 +1,5 @@
 package domain.usecase
 
 interface CurrentFormattedDateUseCase {
-    operator fun invoke(): String
+    suspend operator fun invoke(): String
 }
