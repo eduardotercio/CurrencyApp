@@ -10,7 +10,6 @@ import presentation.base.UiState
 object HomeScreenContract {
 
     sealed interface Event : UiEvent {
-
         data object InitializeScreen : Event
         data object RefreshData : Event
 
@@ -28,6 +27,7 @@ object HomeScreenContract {
     }
 
     sealed interface Effect : UiEffect {
+
         data object OpenCurrencyPickerDialog : Effect
     }
 

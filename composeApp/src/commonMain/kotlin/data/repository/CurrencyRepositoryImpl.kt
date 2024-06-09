@@ -20,7 +20,7 @@ class CurrencyRepositoryImpl(
 
     override suspend fun getLatestExchangeRates(getFromLocal: Boolean): RequestState<DataResponse> {
         return if (getFromLocal) {
-            getExchangeRatesFromLocal().takeIf { it.isSuccess() } ?: getExchangeRatesFromApi()
+                    getExchangeRatesFromLocal().takeIf { it.isSuccess() } ?: getExchangeRatesFromApi()
         } else {
             getExchangeRatesFromApi()
         }

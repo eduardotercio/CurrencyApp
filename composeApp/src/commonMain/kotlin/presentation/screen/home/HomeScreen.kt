@@ -1,6 +1,7 @@
 package presentation.screen.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -11,10 +12,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import domain.model.CurrencyType
 import koinViewModel
+import presentation.animation.JsonAnimation
 import presentation.components.CurrencyPickerDialog
 import presentation.components.HomeBody
 import presentation.components.HomeHeader
@@ -35,10 +38,8 @@ fun HomeScreen(navController: NavController) {
     var isDialogOpen by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
-            when (effect) {
-                is HomeScreenContract.Effect.OpenCurrencyPickerDialog -> {
-                    isDialogOpen = true
-                }
+            if (effect is HomeScreenContract.Effect.OpenCurrencyPickerDialog) {
+                isDialogOpen = true
             }
         }
     }
@@ -73,13 +74,26 @@ fun HomeScreen(navController: NavController) {
             },
         )
     }
-
+    JsonAnimation(
+        jsonPath = ("files/circular_progression_anim.json"),
+        modifier = Modifier.fillMaxSize()
+    )
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(surfaceColor)
     ) {
-        if (!state.isLoading) {
+        if (state.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                JsonAnimation(
+                    jsonPath = ("files/circular_progression_anim.json"),
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        } else {
             HomeHeader(
                 state = state,
                 sendEvent = { event ->
