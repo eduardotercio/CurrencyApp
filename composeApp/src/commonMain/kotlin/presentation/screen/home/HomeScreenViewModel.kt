@@ -42,9 +42,9 @@ class HomeScreenViewModel(
                 getFormattedDate()
                 fetchNewRates()
                 checkIfCanRefresh()
-            }.inWholeMilliseconds
+            }
 
-            val remainingDelay = (2000 - executionTime).coerceAtLeast(0)
+            val remainingDelay = (2000 - executionTime.inWholeMilliseconds).coerceAtLeast(0)
             delay(remainingDelay)
 
             withContext(Dispatchers.Main) {

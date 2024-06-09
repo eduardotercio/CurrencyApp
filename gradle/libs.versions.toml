@@ -14,6 +14,7 @@ statelyCommon = "2.0.5"
 ktor = "2.3.10"
 date-time = "0.5.0"
 build-konfig = "0.15.1"
+compottie = "1.1.2"
 
 lifecycleViewModel = "2.8.0"
 koinCompose = "3.6.0-alpha3"
@@ -51,6 +52,8 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinCompose" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinComposeMultiplatform" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
+
+compottie = { group = "io.github.alexzhirkevich", name = "compottie", version.ref = "compottie" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

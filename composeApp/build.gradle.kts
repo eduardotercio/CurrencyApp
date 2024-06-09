@@ -80,7 +80,7 @@ kotlin {
             implementation(libs.lifecycle.viewmodel)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.navigation.compose)
-
+            implementation(libs.compottie)
         }
         iosMain.dependencies {
             implementation(compose.runtime)
