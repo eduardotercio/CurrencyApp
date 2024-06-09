@@ -131,6 +131,7 @@ fun CurrencyFlag(
 
 @Composable
 fun SwitchButton(
+    amount: String,
     modifier: Modifier = Modifier,
     sendEvent: (HomeScreenContract.Event) -> Unit
 ) {
@@ -148,6 +149,7 @@ fun SwitchButton(
         onClick = {
             animatedStarted = !animatedStarted
             sendEvent(HomeScreenContract.Event.SwitchConversionCurrencies)
+            sendEvent(HomeScreenContract.Event.ConvertSourceToTargetCurrency(amount.toDouble()))
         }
     ) {
         Icon(

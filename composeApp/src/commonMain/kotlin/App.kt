@@ -16,11 +16,3 @@ fun App() {
         }
     }
 }
-
-@Composable
-inline fun <reified T : ViewModel> koinViewModel(): T {
-    val scope = currentKoinScope()
-    return viewModel {
-        scope.get<T>()
-    }
-}

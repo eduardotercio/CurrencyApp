@@ -77,6 +77,7 @@ fun HomeHeader(
             )
 
             SwitchButton(
+                amount = amount,
                 modifier = Modifier.padding(top = 24.dp),
                 sendEvent = sendEvent
             )

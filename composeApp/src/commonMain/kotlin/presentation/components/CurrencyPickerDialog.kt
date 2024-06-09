@@ -38,7 +38,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -60,15 +59,12 @@ import textColor
 
 @Composable
 fun CurrencyPickerDialog(
-    currenciesList: List<Currency>,
+    filteredCurrenciesList: List<Currency>,
     currencyType: CurrencyType,
+    onValueChange: (String) -> Unit,
     onDismiss: () -> Unit,
     onConfirmSelected: (CurrencyCode) -> Unit
 ) {
-    val currenciesToShow by remember(currenciesList) {
-        mutableStateOf(currenciesList.toMutableStateList())
-    }
-
     var searchQuery by remember { mutableStateOf("") }
     var selectedCurrencyCode by remember(currencyType) {
         mutableStateOf(currencyType.code)
@@ -96,16 +92,7 @@ fun CurrencyPickerDialog(
                     onValueChange = { query ->
                         searchQuery = query.uppercase()
 
-                        val queryList = if (searchQuery.isNotEmpty()) {
-                            currenciesList.filter {
-                                it.code.contains(searchQuery)
-                            }
-                        } else currenciesList
-
-                        currenciesToShow.apply {
-                            clear()
-                            addAll(queryList)
-                        }
+                        onValueChange(searchQuery)
                     },
                     placeholder = {
                         Text(
@@ -134,13 +121,16 @@ fun CurrencyPickerDialog(
                     )
                 )
                 AnimatedContent(
-                    targetState = currenciesToShow
+                    targetState = filteredCurrenciesList
                 ) { list ->
                     LazyColumn(
                         modifier = Modifier
                             .height(250.dp)
                     ) {
-                        items(list) { currency ->
+                        items(
+                            items = list,
+                            key = { it.id.toHexString() }
+                        ) { currency ->
                             val code = CurrencyCode.valueOf(currency.code)
                             val isSelected = selectedCurrencyCode.name == currency.code
 

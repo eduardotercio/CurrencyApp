@@ -24,6 +24,10 @@ object HomeScreenContract {
         ) : Event
 
         data object OnDialogOpened : Event
+
+        data class FilterCurrencyList(
+            val query: String
+        ) : Event
     }
 
     sealed interface Effect : UiEffect {
@@ -33,11 +37,13 @@ object HomeScreenContract {
 
     data class State(
         val isLoading: Boolean = true,
-        val currencyValuesList: List<Currency> = listOf(),
-        val currentFormattedDate: String = "",
         val isRefreshEnabled: Boolean = false,
+        val currentFormattedDate: String = "",
+        val typedAmount: Double = 100.0,
+        val convertedAmount: Double = 0.0,
+        val allCurrenciesList: List<Currency> = listOf(),
+        val filteredCurrenciesList: List<Currency> = listOf(),
         val sourceCurrency: CurrencyCode = CurrencyCode.BRL,
         val targetCurrency: CurrencyCode = CurrencyCode.USD,
-        val convertedAmount: Double = 0.0
     ) : UiState
 }

@@ -16,12 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import domain.model.CurrencyType
-import koinViewModel
 import presentation.animation.JsonAnimation
 import presentation.components.CurrencyPickerDialog
 import presentation.components.HomeBody
 import presentation.components.HomeHeader
 import surfaceColor
+import util.koinViewModel
 
 private const val DEFAULT_VALUE = "100.00"
 
@@ -49,22 +49,28 @@ fun HomeScreen(navController: NavController) {
 
     if (isDialogOpen) {
         CurrencyPickerDialog(
-            currenciesList = state.currencyValuesList,
+            filteredCurrenciesList = state.filteredCurrenciesList,
             currencyType = currencyType,
+            onValueChange = { query ->
+                viewModel.setEvent(HomeScreenContract.Event.FilterCurrencyList(query))
+            },
             onConfirmSelected = {
                 if (currencyType.isSource()) {
-                    viewModel.setEvent(
+                    sendEvent(
                         HomeScreenContract.Event.SaveSelectedCurrency(
                             CurrencyType.SourceCurrency(it)
                         )
                     )
                 } else if (currencyType.isTarget()) {
-                    viewModel.setEvent(
+                    sendEvent(
                         HomeScreenContract.Event.SaveSelectedCurrency(
                             CurrencyType.TargetCurrency(it)
                         )
                     )
                 }
+                sendEvent(
+                    HomeScreenContract.Event.ConvertSourceToTargetCurrency(amount.toDouble())
+                )
                 currencyType = CurrencyType.None
                 isDialogOpen = false
             },
@@ -105,7 +111,8 @@ fun HomeScreen(navController: NavController) {
                 },
                 amount = amount,
                 onAmountValueChanged = {
-                    amount = it
+                    if (it.isNotEmpty())
+                        amount = it
                 }
             )
             HomeBody(

@@ -10,8 +10,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import koinViewModel
 import presentation.animation.JsonAnimation
+import util.koinViewModel
 
 @Composable
 fun SplashScreen(navController: NavController) {

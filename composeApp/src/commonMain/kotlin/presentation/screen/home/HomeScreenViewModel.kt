@@ -3,6 +3,7 @@ package presentation.screen.home
 import androidx.lifecycle.viewModelScope
 import domain.model.Currency
 import domain.model.CurrencyCode
+import domain.model.CurrencyType
 import domain.model.RequestState
 import domain.usecase.ConvertCurrenciesUseCase
 import domain.usecase.CurrentFormattedDateUseCase
@@ -13,13 +14,16 @@ import domain.usecase.SaveLastRequestTimeUseCase
 import domain.usecase.SaveLatestExchangeRatesUseCase
 import domain.usecase.SaveSelectedCurrencyUseCase
 import domain.usecase.TimeFromLastRequestUseCase
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import presentation.base.BaseViewModel
+import util.debounce
 import kotlin.time.measureTime
 
 class HomeScreenViewModel(
@@ -33,6 +37,9 @@ class HomeScreenViewModel(
     private val saveSelectedCurrencyUseCase: SaveSelectedCurrencyUseCase,
     private val convertCurrenciesUseCase: ConvertCurrenciesUseCase
 ) : BaseViewModel<HomeScreenContract.Event, HomeScreenContract.State, HomeScreenContract.Effect>() {
+
+    private val scope = CoroutineScope(Dispatchers.Main + Job())
+
     override fun setInitialState() = HomeScreenContract.State()
 
     private suspend fun initializeScreen() {
@@ -44,7 +51,7 @@ class HomeScreenViewModel(
                 checkIfCanRefresh()
             }
 
-            val remainingDelay = (2000 - executionTime.inWholeMilliseconds).coerceAtLeast(0)
+            val remainingDelay = (2500 - executionTime.inWholeMilliseconds).coerceAtLeast(0)
             delay(remainingDelay)
 
             withContext(Dispatchers.Main) {
@@ -76,16 +83,35 @@ class HomeScreenViewModel(
 
                 is HomeScreenContract.Event.SaveSelectedCurrency -> {
                     saveSelectedCurrencyUseCase(event.currencyType)
+
+
+                    setState {
+                        if (event.currencyType is CurrencyType.SourceCurrency) {
+                            copy(
+                                sourceCurrency = event.currencyType.code,
+                                filteredCurrenciesList = currentState.allCurrenciesList
+                            )
+                        } else {
+                            copy(
+                                targetCurrency = event.currencyType.code,
+                                filteredCurrenciesList = currentState.allCurrenciesList
+                            )
+                        }
+                    }
                 }
 
                 is HomeScreenContract.Event.ConvertSourceToTargetCurrency -> {
-                    convertCurrencies(event.amount)
+                    debouncedConversion(event.amount)
                 }
 
                 is HomeScreenContract.Event.OnDialogOpened -> {
                     setEffect {
                         HomeScreenContract.Effect.OpenCurrencyPickerDialog
                     }
+                }
+
+                is HomeScreenContract.Event.FilterCurrencyList -> {
+                    debouncedSearch(event.query)
                 }
             }
         }
@@ -118,7 +144,8 @@ class HomeScreenViewModel(
             is RequestState.Success -> {
                 setState {
                     copy(
-                        currencyValuesList = response.data.data
+                        allCurrenciesList = response.data.data,
+                        filteredCurrenciesList = response.data.data
                     )
                 }
                 if (!getFromLocal) {
@@ -202,28 +229,56 @@ class HomeScreenViewModel(
         }
     }
 
-    private suspend fun convertCurrencies(amount: Double) {
-        with(currentState) {
-            val sourceCurrency = currencyValuesList.find { it.code == sourceCurrency.name }
-            val targetCurrency = currencyValuesList.find { it.code == targetCurrency.name }
-            val convertedAmount = convertCurrenciesUseCase(
-                amount = amount,
-                sourceCurrency = sourceCurrency,
-                targetCurrency = targetCurrency
-            )
+    private val debouncedConversion = scope.debounce<Double> { amount ->
+        viewModelScope.launch {
+            with(currentState) {
+                val sourceCurrency = allCurrenciesList.find { it.code == sourceCurrency.name }
+                val targetCurrency = allCurrenciesList.find { it.code == targetCurrency.name }
+                val convertedAmount = convertCurrenciesUseCase(
+                    amount = amount,
+                    sourceCurrency = sourceCurrency,
+                    targetCurrency = targetCurrency
+                )
 
-            withContext(Dispatchers.Main) {
-                when (convertedAmount) {
-                    is RequestState.Success -> {
-                        setState {
-                            copy(
-                                convertedAmount = convertedAmount.data
-                            )
+                withContext(Dispatchers.Main) {
+                    when (convertedAmount) {
+                        is RequestState.Success -> {
+                            setState {
+                                copy(
+                                    convertedAmount = convertedAmount.data
+                                )
+                            }
+                        }
+
+                        is RequestState.Error -> {
+
                         }
                     }
+                }
+            }
+        }
+    }
 
-                    is RequestState.Error -> {
+    private val debouncedSearch = scope.debounce<String> { query ->
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                val tmpList = mutableListOf<Currency>()
 
+                if (query.isNotEmpty()) {
+                    val queryLength = query.length
+                    val filteredCurrencies = currentState.allCurrenciesList.filter { currency ->
+                        currency.code.length >= queryLength && currency.code.startsWith(query)
+                    }
+                    tmpList.addAll(filteredCurrencies)
+                } else {
+                    tmpList.addAll(currentState.allCurrenciesList)
+                }
+
+                withContext(Dispatchers.Main) {
+                    setState {
+                        copy(
+                            filteredCurrenciesList = tmpList
+                        )
                     }
                 }
             }
