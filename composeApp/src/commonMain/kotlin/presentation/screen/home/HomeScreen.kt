@@ -23,6 +23,7 @@ import surfaceColor
 import util.koinViewModel
 
 private const val DEFAULT_VALUE = "100.00"
+private const val DOT_CHAR = '.'
 
 @Composable
 fun HomeScreen() {
@@ -108,7 +109,8 @@ fun HomeScreen() {
                 },
                 amount = amount,
                 onAmountValueChanged = { input ->
-                    amount = input
+                    if ((input.count { it == DOT_CHAR } <= 1))
+                        amount = input
                     sendEvent(HomeScreenContract.Event.ConvertSourceToTargetCurrency(amount))
                 }
             )

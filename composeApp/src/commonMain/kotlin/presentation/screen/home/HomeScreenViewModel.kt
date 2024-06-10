@@ -213,7 +213,6 @@ class HomeScreenViewModel(
 
         withContext(Dispatchers.Main) {
             setState {
-                resetFilteredList()
                 if (currencyType.isSource()) {
                     copy(
                         sourceCurrency = currencyType.currencyCode!!
@@ -224,6 +223,7 @@ class HomeScreenViewModel(
                     )
                 }
             }
+            resetFilteredList()
         }
     }
 
@@ -246,7 +246,7 @@ class HomeScreenViewModel(
     private val debouncedConversion = scope.debounce<String> { amount ->
         viewModelScope.launch {
             with(currentState) {
-                if (amount.isNotEmpty()) {
+                if (amount.isNotEmpty() && amount.last() != DOT_CHAR) {
                     val sourceCurrency = allCurrenciesList.find { it.code == sourceCurrency.name }
                     val targetCurrency = allCurrenciesList.find { it.code == targetCurrency.name }
                     val convertedAmount = convertCurrenciesUseCase(
@@ -291,6 +291,7 @@ class HomeScreenViewModel(
     private companion object {
         const val ONE_DAY = 24L
         const val HALF_DAY = 12L
+        const val DOT_CHAR = '.'
     }
 
 }

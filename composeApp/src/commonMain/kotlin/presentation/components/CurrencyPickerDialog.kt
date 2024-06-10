@@ -127,7 +127,10 @@ fun CurrencyPickerDialog(
                             key = { it.id.toHexString() }
                         ) { currency ->
                             val code = CurrencyCode.valueOf(currency.code)
-                            val isSelected = selectedCurrencyCode!!.name == currency.code
+                            if (currency.code == searchQuery) {
+                                selectedCurrencyCode = code
+                            }
+                            val isSelected = currency.code == selectedCurrencyCode!!.name
 
                             Row(
                                 modifier = Modifier

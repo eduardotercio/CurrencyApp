@@ -137,13 +137,26 @@ android {
     sourceSets["main"].res.srcDirs("src/androidMain/res")
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
-    tasks.register("testClasses") {
+    tasks.register("testClasses") {}
 
-    }
     buildFeatures {
         compose = true
         buildConfig = true
     }
+
+    val keystorePropFile = file("$rootDir/keystore.properties")
+    val keystoreProps = Properties()
+    keystoreProps.load(keystorePropFile.inputStream())
+
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProps.getProperty("keyAlias")
+            keyPassword = keystoreProps.getProperty("keyPassword")
+            storeFile = file(keystoreProps.getProperty("storeFile"))
+            storePassword = keystoreProps.getProperty("storePassword")
+        }
+    }
+
     defaultConfig {
         applicationId = "org.example.currencyapptest"
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -158,7 +171,15 @@ android {
     }
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("release")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android.txt"),
+                "proguard-rules.pro"
+            )
+        }
+        debug {
+            applicationIdSuffix = ".debug"
         }
     }
     compileOptions {
