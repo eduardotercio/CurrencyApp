@@ -16,6 +16,7 @@ This project was a significant learning experience as it was my first venture in
 - **Additional Libraries**: Integrating additional libraries such as native ViewModel, Lifecycle, and Navigation, instead of using Voyager as taught in the course.
 - **UseCases and Repositories**: Building use cases and repositories to manage network and local data operations.
 - **MVI Architecture**: Implementing Model-View-Intent (MVI) architecture for better state management.
+- **Conversion Trigger**: Removing the conversion button and integrate the logic into various actions, such as selecting a currency, changing the amount, or switching currencies.
 
 ## Technologies Used
 
