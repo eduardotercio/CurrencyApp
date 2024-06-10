@@ -35,4 +35,4 @@ This project was a significant learning experience as it was my first venture in
 
 ## Contact
 
-Eduardo Tercio - [GitHub](https://www.linkedin.com/in/eduardo-tercio/) - dudubezerra33@gmail.com
+Eduardo Tercio - [Linkedin](https://www.linkedin.com/in/eduardo-tercio/) - dudubezerra33@gmail.com
