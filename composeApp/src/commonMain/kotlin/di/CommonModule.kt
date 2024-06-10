@@ -17,10 +17,8 @@ import domain.usecase.CurrentFormattedDateUseCase
 import domain.usecase.CurrentFormattedDateUseCaseImpl
 import domain.usecase.FilterListFromQueryUseCase
 import domain.usecase.FilterListFromQueryUseCaseImpl
-import domain.usecase.GetSavedSourceCurrencyCodeUseCase
-import domain.usecase.GetSavedSourceCurrencyCodeUseCaseImpl
-import domain.usecase.GetSavedTargetCurrencyCodeUseCase
-import domain.usecase.GetSavedTargetCurrencyCodeUseCaseImpl
+import domain.usecase.GetSavedCurrencyCodeUseCase
+import domain.usecase.GetSavedCurrencyCodeUseCaseImpl
 import domain.usecase.LatestExchangeRatesUseCase
 import domain.usecase.LatestExchangeRatesUseCaseImpl
 import domain.usecase.SaveLastRequestTimeUseCase
@@ -51,8 +49,7 @@ val commonModules = module {
     factoryOf(::SaveLatestExchangeRatesUseCaseImpl) bind SaveLatestExchangeRatesUseCase::class
     factoryOf(::TimeFromLastRequestUseCaseImpl) bind TimeFromLastRequestUseCase::class
     factoryOf(::SaveLastRequestTimeUseCaseImpl) bind SaveLastRequestTimeUseCase::class
-    factoryOf(::GetSavedSourceCurrencyCodeUseCaseImpl) bind GetSavedSourceCurrencyCodeUseCase::class
-    factoryOf(::GetSavedTargetCurrencyCodeUseCaseImpl) bind GetSavedTargetCurrencyCodeUseCase::class
+    factoryOf(::GetSavedCurrencyCodeUseCaseImpl) bind GetSavedCurrencyCodeUseCase::class
     factoryOf(::SaveSelectedCurrencyUseCaseImpl) bind SaveSelectedCurrencyUseCase::class
     factoryOf(::ConvertCurrenciesUseCaseImpl) bind ConvertCurrenciesUseCase::class
     factoryOf(::FilterListFromQueryUseCaseImpl) bind FilterListFromQueryUseCase::class

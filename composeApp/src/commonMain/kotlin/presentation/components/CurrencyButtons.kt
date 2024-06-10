@@ -149,7 +149,7 @@ fun SwitchButton(
         onClick = {
             animatedStarted = !animatedStarted
             sendEvent(HomeScreenContract.Event.SwitchConversionCurrencies)
-            sendEvent(HomeScreenContract.Event.ConvertSourceToTargetCurrency(amount.toDouble()))
+            sendEvent(HomeScreenContract.Event.ConvertSourceToTargetCurrency(amount))
         }
     ) {
         Icon(

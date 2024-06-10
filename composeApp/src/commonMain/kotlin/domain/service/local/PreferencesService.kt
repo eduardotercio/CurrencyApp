@@ -1,7 +1,6 @@
 package domain.service.local
 
 import domain.model.CurrencyType
-import kotlinx.coroutines.flow.Flow
 
 interface PreferencesService {
 
@@ -10,7 +9,5 @@ interface PreferencesService {
 
     suspend fun saveSelectedCurrency(currencyType: CurrencyType)
 
-    suspend fun getLastSourceSelected(): Flow<String>
-
-    suspend fun getLastTargetSelected(): Flow<String>
+    suspend fun getLastSelectedCurrencyCode(currencyType: CurrencyType): String
 }

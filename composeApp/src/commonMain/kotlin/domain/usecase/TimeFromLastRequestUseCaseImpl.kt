@@ -5,31 +5,29 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 import util.getCurrentTimeInMillis
-import util.parseFromMillis
+import util.toInstant
 
 class TimeFromLastRequestUseCaseImpl(
     private val repository: CurrencyRepository
 ) : TimeFromLastRequestUseCase {
-    override suspend fun invoke(): Double {
+    override suspend fun invoke(): Long {
         return withContext(Dispatchers.IO) {
             val lastRequestTimestamp = repository.getLastRequestTime()
             with(Dispatchers.Default) {
                 val currentTimestamp = getCurrentTimeInMillis()
 
-                val lastRequestDateTime = parseFromMillis(lastRequestTimestamp)
-                val currentDateTime = parseFromMillis(currentTimestamp)
+                val lastInstant = toInstant(lastRequestTimestamp)
+                val currentInstant = toInstant(currentTimestamp)
 
-                if (lastRequestDateTime.year != currentDateTime.year) {
-                    ONE.toDouble()
-                } else {
-                    val daysDifference = (currentDateTime.dayOfYear - lastRequestDateTime.dayOfYear)
-                    daysDifference.toDouble()
-                }
+                val hoursDifference = currentInstant.minus(lastInstant).inWholeHours
+
+                hoursDifference.takeIf { hoursDifference >= ZERO } ?: ONE_DAY
             }
         }
     }
 
     private companion object {
-        const val ONE = 1
+        const val ONE_DAY = 24L
+        const val ZERO = 0L
     }
 }

@@ -4,18 +4,13 @@ import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.TwoWayConverter
 import androidx.compose.animation.core.animateValueAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,14 +22,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import currencyapptest.composeapp.generated.resources.Res
 import currencyapptest.composeapp.generated.resources.bebas_nue_regular
-import headerColor
 import org.jetbrains.compose.resources.Font
 import presentation.screen.home.HomeScreenContract
 
 @Composable
 fun HomeBody(
     state: HomeScreenContract.State,
-    sendEvent: (HomeScreenContract.Event) -> Unit,
     amount: String
 ) {
     val convertedAmount = if (amount.isNotEmpty()) state.convertedAmount else 0.0
@@ -74,29 +67,6 @@ fun HomeBody(
                 fontFamily = FontFamily(Font(Res.font.bebas_nue_regular)),
                 color = if (isSystemInDarkTheme()) Color.White else Color.Black,
                 textAlign = TextAlign.Center
-            )
-        }
-
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(54.dp)
-                .padding(horizontal = 24.dp)
-                .background(
-                    color = Color.Unspecified,
-                    shape = RoundedCornerShape(99.dp)
-                ),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = headerColor,
-                contentColor = Color.White
-            ),
-            onClick = {
-                if (amount.isNotEmpty())
-                    sendEvent(HomeScreenContract.Event.ConvertSourceToTargetCurrency(amount.toDouble()))
-            }
-        ) {
-            Text(
-                text = "Convert"
             )
         }
     }

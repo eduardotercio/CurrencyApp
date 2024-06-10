@@ -7,7 +7,6 @@ import com.russhwolf.settings.coroutines.FlowSettings
 import com.russhwolf.settings.coroutines.toFlowSettings
 import domain.model.CurrencyType
 import domain.service.local.PreferencesService
-import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalSettingsApi::class)
 class PreferencesServiceImpl(
@@ -30,40 +29,24 @@ class PreferencesServiceImpl(
     }
 
     override suspend fun saveSelectedCurrency(currencyType: CurrencyType) {
-        if (currencyType is CurrencyType.SourceCurrency) {
+        currencyType.currencyCode?.let { currencyCode ->
             flowSettings.putString(
-                key = SOURCE_CURRENCY_KEY,
-                value = currencyType.source.name
-            )
-        } else if (currencyType is CurrencyType.TargetCurrency) {
-            flowSettings.putString(
-                key = TARGET_CURRENCY_KEY,
-                value = currencyType.target.name
+                key = currencyType.key,
+                value = currencyCode.name
             )
         }
     }
 
-    override suspend fun getLastSourceSelected(): Flow<String> {
-        return flowSettings.getStringFlow(
-            key = SOURCE_CURRENCY_KEY,
-            defaultValue = DEFAULT_SOURCE_CURRENCY_CODE_VALUE
-        )
-    }
-
-    override suspend fun getLastTargetSelected(): Flow<String> {
-        return flowSettings.getStringFlow(
-            key = TARGET_CURRENCY_KEY,
-            defaultValue = DEFAULT_TARGET_CURRENCY_CODE_VALUE
+    override suspend fun getLastSelectedCurrencyCode(currencyType: CurrencyType): String {
+        return flowSettings.getString(
+            key = currencyType.key,
+            defaultValue = currencyType.defaultCode
         )
     }
 
     private companion object {
         const val TIMESTAMP_KEY = "lastUpdated"
-        const val SOURCE_CURRENCY_KEY = "source"
-        const val TARGET_CURRENCY_KEY = "target"
 
         const val DEFAULT_TIMESTAMP_VALUE = 0L
-        const val DEFAULT_SOURCE_CURRENCY_CODE_VALUE = "BRL"
-        const val DEFAULT_TARGET_CURRENCY_CODE_VALUE = "USD"
     }
 }

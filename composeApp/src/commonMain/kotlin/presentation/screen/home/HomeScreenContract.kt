@@ -20,7 +20,7 @@ object HomeScreenContract {
         ) : Event
 
         data class ConvertSourceToTargetCurrency(
-            val amount: Double
+            val amount: String
         ) : Event
 
         data object OnDialogOpened : Event

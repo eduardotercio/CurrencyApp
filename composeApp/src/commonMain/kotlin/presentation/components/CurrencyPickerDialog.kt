@@ -22,7 +22,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
@@ -47,7 +46,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import domain.model.Currency
 import domain.model.CurrencyCode
@@ -67,7 +65,7 @@ fun CurrencyPickerDialog(
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var selectedCurrencyCode by remember(currencyType) {
-        mutableStateOf(currencyType.code)
+        mutableStateOf(currencyType.currencyCode)
     }
 
     AlertDialog(
@@ -129,7 +127,7 @@ fun CurrencyPickerDialog(
                             key = { it.id.toHexString() }
                         ) { currency ->
                             val code = CurrencyCode.valueOf(currency.code)
-                            val isSelected = selectedCurrencyCode.name == currency.code
+                            val isSelected = selectedCurrencyCode!!.name == currency.code
 
                             Row(
                                 modifier = Modifier
@@ -164,7 +162,7 @@ fun CurrencyPickerDialog(
         },
         confirmButton = {
             TextButton(onClick = {
-                onConfirmSelected(selectedCurrencyCode)
+                onConfirmSelected(selectedCurrencyCode!!)
             }) {
                 Text(
                     text = "Confirm",

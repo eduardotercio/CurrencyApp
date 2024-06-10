@@ -2,14 +2,12 @@ package presentation.screen.home
 
 import androidx.lifecycle.viewModelScope
 import domain.model.Currency
-import domain.model.CurrencyCode
 import domain.model.CurrencyType
 import domain.model.RequestState
 import domain.usecase.ConvertCurrenciesUseCase
 import domain.usecase.CurrentFormattedDateUseCase
 import domain.usecase.FilterListFromQueryUseCase
-import domain.usecase.GetSavedSourceCurrencyCodeUseCase
-import domain.usecase.GetSavedTargetCurrencyCodeUseCase
+import domain.usecase.GetSavedCurrencyCodeUseCase
 import domain.usecase.LatestExchangeRatesUseCase
 import domain.usecase.SaveLastRequestTimeUseCase
 import domain.usecase.SaveLatestExchangeRatesUseCase
@@ -17,10 +15,8 @@ import domain.usecase.SaveSelectedCurrencyUseCase
 import domain.usecase.TimeFromLastRequestUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import presentation.base.BaseViewModel
@@ -33,8 +29,7 @@ class HomeScreenViewModel(
     private val getCurrentFormattedDateUseCase: CurrentFormattedDateUseCase,
     private val getTimeFromLastRequestUseCase: TimeFromLastRequestUseCase,
     private val saveLastRequestTimeUseCase: SaveLastRequestTimeUseCase,
-    private val getSavedSourceCurrencyCodeUseCase: GetSavedSourceCurrencyCodeUseCase,
-    private val getSavedTargetCurrencyCodeUseCase: GetSavedTargetCurrencyCodeUseCase,
+    private val getSavedCurrencyCodeUseCase: GetSavedCurrencyCodeUseCase,
     private val saveSelectedCurrencyUseCase: SaveSelectedCurrencyUseCase,
     private val convertCurrenciesUseCase: ConvertCurrenciesUseCase,
     private val filterListFromQueryUseCase: FilterListFromQueryUseCase
@@ -47,10 +42,11 @@ class HomeScreenViewModel(
     private suspend fun initializeScreen() {
         viewModelScope.launch {
             val executionTime = measureTime {
-                launch { getSavedSelectedCurrencies() }
+                getSavedSelectedCurrencies()
                 getFormattedDate()
                 fetchNewRates()
                 checkIfCanRefresh()
+                debouncedConversion(currentState.typedAmount.toString())
             }
 
             val remainingDelay = (2500 - executionTime.inWholeMilliseconds).coerceAtLeast(0)
@@ -84,20 +80,11 @@ class HomeScreenViewModel(
                 }
 
                 is HomeScreenContract.Event.SaveSelectedCurrency -> {
-                    saveSelectedCurrencyUseCase(event.currencyType)
-
-                    setState {
-                        if (event.currencyType is CurrencyType.SourceCurrency) {
-                            copy(
-                                sourceCurrency = event.currencyType.code,
-                                filteredCurrenciesList = currentState.allCurrenciesList
-                            )
-                        } else {
-                            copy(
-                                targetCurrency = event.currencyType.code,
-                                filteredCurrenciesList = currentState.allCurrenciesList
-                            )
-                        }
+                    if (areCurrenciesEqual(event.currencyType)) {
+                        switchConversionCurrencies()
+                        resetFilteredList()
+                    } else {
+                        saveCurrency(event.currencyType)
                     }
                 }
 
@@ -193,66 +180,94 @@ class HomeScreenViewModel(
         )
     }
 
-    private suspend fun getSavedSelectedCurrencies() = withContext(Dispatchers.IO) {
-        launch {
-            getSavedSourceCurrencyCodeUseCase().collectLatest { code ->
-                val source = CurrencyCode.entries.find { it.name == code }
-                    ?: currentState.sourceCurrency
-                withContext(Dispatchers.Main) {
-                    setState {
-                        copy(sourceCurrency = source)
-                    }
-                }
+    private suspend fun getSavedSelectedCurrencies() {
+        val source = getSavedCurrencyCodeUseCase(CurrencyType.SourceCurrency())
+        val target = getSavedCurrencyCodeUseCase(CurrencyType.TargetCurrency())
+
+        withContext(Dispatchers.Main) {
+            setState {
+                copy(
+                    sourceCurrency = source,
+                    targetCurrency = target
+                )
             }
         }
-        launch {
-            getSavedTargetCurrencyCodeUseCase().collectLatest { code ->
-                val target = CurrencyCode.entries.find { it.name == code }
-                    ?: currentState.targetCurrency
-                withContext(Dispatchers.Main) {
-                    setState {
-                        copy(targetCurrency = target)
-                    }
+    }
+
+    private suspend fun switchConversionCurrencies() {
+        val currentSouce = currentState.sourceCurrency
+        val currentTarget = currentState.targetCurrency
+
+        withContext(Dispatchers.Main) {
+            setState {
+                copy(
+                    sourceCurrency = currentTarget,
+                    targetCurrency = currentSouce
+                )
+            }
+        }
+    }
+
+    private suspend fun saveCurrency(currencyType: CurrencyType) {
+        saveSelectedCurrencyUseCase(currencyType)
+
+        withContext(Dispatchers.Main) {
+            setState {
+                resetFilteredList()
+                if (currencyType.isSource()) {
+                    copy(
+                        sourceCurrency = currencyType.currencyCode!!
+                    )
+                } else {
+                    copy(
+                        targetCurrency = currencyType.currencyCode!!
+                    )
                 }
             }
         }
     }
 
-    private fun switchConversionCurrencies() {
-        val currentSouce = currentState.sourceCurrency
-        val currentTarget = currentState.targetCurrency
+    private fun areCurrenciesEqual(currencyType: CurrencyType): Boolean {
+        return if (currencyType.isSource()) {
+            currencyType.currencyCode!!.name == currentState.targetCurrency.name
+        } else {
+            currencyType.currencyCode!!.name == currentState.sourceCurrency.name
+        }
+    }
 
+    private fun resetFilteredList() {
         setState {
             copy(
-                sourceCurrency = currentTarget,
-                targetCurrency = currentSouce
+                filteredCurrenciesList = currentState.allCurrenciesList
             )
         }
     }
 
-    private val debouncedConversion = scope.debounce<Double> { amount ->
+    private val debouncedConversion = scope.debounce<String> { amount ->
         viewModelScope.launch {
             with(currentState) {
-                val sourceCurrency = allCurrenciesList.find { it.code == sourceCurrency.name }
-                val targetCurrency = allCurrenciesList.find { it.code == targetCurrency.name }
-                val convertedAmount = convertCurrenciesUseCase(
-                    amount = amount,
-                    sourceCurrency = sourceCurrency,
-                    targetCurrency = targetCurrency
-                )
+                if (amount.isNotEmpty()) {
+                    val sourceCurrency = allCurrenciesList.find { it.code == sourceCurrency.name }
+                    val targetCurrency = allCurrenciesList.find { it.code == targetCurrency.name }
+                    val convertedAmount = convertCurrenciesUseCase(
+                        amount = amount.toDouble(),
+                        sourceCurrency = sourceCurrency,
+                        targetCurrency = targetCurrency
+                    )
 
-                withContext(Dispatchers.Main) {
-                    when (convertedAmount) {
-                        is RequestState.Success -> {
-                            setState {
-                                copy(
-                                    convertedAmount = convertedAmount.data
-                                )
+                    withContext(Dispatchers.Main) {
+                        when (convertedAmount) {
+                            is RequestState.Success -> {
+                                setState {
+                                    copy(
+                                        convertedAmount = convertedAmount.data
+                                    )
+                                }
                             }
-                        }
 
-                        is RequestState.Error -> {
+                            is RequestState.Error -> {
 
+                            }
                         }
                     }
                 }
@@ -274,8 +289,8 @@ class HomeScreenViewModel(
     }
 
     private companion object {
-        const val ONE_DAY = 1
-        const val HALF_DAY = 0.5
+        const val ONE_DAY = 24L
+        const val HALF_DAY = 12L
     }
 
 }

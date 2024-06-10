@@ -4,6 +4,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
 
@@ -21,6 +22,11 @@ private fun getCurrentMoment(): Instant {
 
 fun parseToMillis(date: String): Long {
     return Instant.parse(date).toEpochMilliseconds()
+}
+
+fun toInstant(millis: Long): Instant {
+    val dateTime = parseFromMillis(millis)
+    return dateTime.toInstant(TimeZone.currentSystemDefault())
 }
 
 fun parseFromMillis(millis: Long): LocalDateTime {
