@@ -110,9 +110,10 @@ fun HomeScreen(navController: NavController) {
                     currencyType = it
                 },
                 amount = amount,
-                onAmountValueChanged = {
-                    if (it.isNotEmpty())
-                        amount = it
+                onAmountValueChanged = { input ->
+                    amount = input
+                    if (input.isNotEmpty())
+                        sendEvent(HomeScreenContract.Event.ConvertSourceToTargetCurrency(amount.toDouble()))
                 }
             )
             HomeBody(

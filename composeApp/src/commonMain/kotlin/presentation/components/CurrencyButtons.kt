@@ -165,7 +165,6 @@ fun InputValueButton(
     amount: String,
     onValueChanged: (String) -> Unit
 ) {
-
     TextField(
         modifier = Modifier
             .fillMaxWidth()

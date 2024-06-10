@@ -37,7 +37,7 @@ fun HomeBody(
     sendEvent: (HomeScreenContract.Event) -> Unit,
     amount: String
 ) {
-    val convertedAmount = state.convertedAmount
+    val convertedAmount = if (amount.isNotEmpty()) state.convertedAmount else 0.0
 
     val currencyConverterAnimation = object : TwoWayConverter<Double, AnimationVector1D> {
         override val convertFromVector: (AnimationVector1D) -> Double = { vector ->
@@ -91,9 +91,8 @@ fun HomeBody(
                 contentColor = Color.White
             ),
             onClick = {
-                sendEvent(
-                    HomeScreenContract.Event.ConvertSourceToTargetCurrency(amount.toDouble())
-                )
+                if (amount.isNotEmpty())
+                    sendEvent(HomeScreenContract.Event.ConvertSourceToTargetCurrency(amount.toDouble()))
             }
         ) {
             Text(

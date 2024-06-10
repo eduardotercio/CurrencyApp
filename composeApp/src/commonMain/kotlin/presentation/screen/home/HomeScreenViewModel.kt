@@ -7,6 +7,7 @@ import domain.model.CurrencyType
 import domain.model.RequestState
 import domain.usecase.ConvertCurrenciesUseCase
 import domain.usecase.CurrentFormattedDateUseCase
+import domain.usecase.FilterListFromQueryUseCase
 import domain.usecase.GetSavedSourceCurrencyCodeUseCase
 import domain.usecase.GetSavedTargetCurrencyCodeUseCase
 import domain.usecase.LatestExchangeRatesUseCase
@@ -35,7 +36,8 @@ class HomeScreenViewModel(
     private val getSavedSourceCurrencyCodeUseCase: GetSavedSourceCurrencyCodeUseCase,
     private val getSavedTargetCurrencyCodeUseCase: GetSavedTargetCurrencyCodeUseCase,
     private val saveSelectedCurrencyUseCase: SaveSelectedCurrencyUseCase,
-    private val convertCurrenciesUseCase: ConvertCurrenciesUseCase
+    private val convertCurrenciesUseCase: ConvertCurrenciesUseCase,
+    private val filterListFromQueryUseCase: FilterListFromQueryUseCase
 ) : BaseViewModel<HomeScreenContract.Event, HomeScreenContract.State, HomeScreenContract.Effect>() {
 
     private val scope = CoroutineScope(Dispatchers.Main + Job())
@@ -83,7 +85,6 @@ class HomeScreenViewModel(
 
                 is HomeScreenContract.Event.SaveSelectedCurrency -> {
                     saveSelectedCurrencyUseCase(event.currencyType)
-
 
                     setState {
                         if (event.currencyType is CurrencyType.SourceCurrency) {
@@ -261,25 +262,12 @@ class HomeScreenViewModel(
 
     private val debouncedSearch = scope.debounce<String> { query ->
         viewModelScope.launch {
-            withContext(Dispatchers.Default) {
-                val tmpList = mutableListOf<Currency>()
-
-                if (query.isNotEmpty()) {
-                    val queryLength = query.length
-                    val filteredCurrencies = currentState.allCurrenciesList.filter { currency ->
-                        currency.code.length >= queryLength && currency.code.startsWith(query)
-                    }
-                    tmpList.addAll(filteredCurrencies)
-                } else {
-                    tmpList.addAll(currentState.allCurrenciesList)
-                }
-
-                withContext(Dispatchers.Main) {
-                    setState {
-                        copy(
-                            filteredCurrenciesList = tmpList
-                        )
-                    }
+            val filteredList = filterListFromQueryUseCase(currentState.allCurrenciesList, query)
+            withContext(Dispatchers.Main) {
+                setState {
+                    copy(
+                        filteredCurrenciesList = filteredList
+                    )
                 }
             }
         }

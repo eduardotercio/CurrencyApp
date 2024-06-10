@@ -15,6 +15,8 @@ import domain.usecase.ConvertCurrenciesUseCase
 import domain.usecase.ConvertCurrenciesUseCaseImpl
 import domain.usecase.CurrentFormattedDateUseCase
 import domain.usecase.CurrentFormattedDateUseCaseImpl
+import domain.usecase.FilterListFromQueryUseCase
+import domain.usecase.FilterListFromQueryUseCaseImpl
 import domain.usecase.GetSavedSourceCurrencyCodeUseCase
 import domain.usecase.GetSavedSourceCurrencyCodeUseCaseImpl
 import domain.usecase.GetSavedTargetCurrencyCodeUseCase
@@ -53,4 +55,5 @@ val commonModules = module {
     factoryOf(::GetSavedTargetCurrencyCodeUseCaseImpl) bind GetSavedTargetCurrencyCodeUseCase::class
     factoryOf(::SaveSelectedCurrencyUseCaseImpl) bind SaveSelectedCurrencyUseCase::class
     factoryOf(::ConvertCurrenciesUseCaseImpl) bind ConvertCurrenciesUseCase::class
+    factoryOf(::FilterListFromQueryUseCaseImpl) bind FilterListFromQueryUseCase::class
 }

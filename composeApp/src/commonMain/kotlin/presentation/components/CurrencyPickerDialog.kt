@@ -115,9 +115,6 @@ fun CurrencyPickerDialog(
                         disabledIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                         cursorColor = textColor,
-                    ),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Ascii
                     )
                 )
                 AnimatedContent(
