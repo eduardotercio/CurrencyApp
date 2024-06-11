@@ -25,6 +25,7 @@ fun SplashScreen(navController: NavController) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 is SplashScreenContract.Effect.NavigateToHome -> {
+                    navController.popBackStack()
                     navController.navigate(Screen.Home.route)
                 }
             }

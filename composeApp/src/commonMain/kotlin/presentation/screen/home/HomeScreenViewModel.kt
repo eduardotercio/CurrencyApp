@@ -101,6 +101,18 @@ class HomeScreenViewModel(
                 is HomeScreenContract.Event.FilterCurrencyList -> {
                     debouncedSearch(event.query)
                 }
+
+                is HomeScreenContract.Event.OnShowSnackBarClosureWarning -> {
+                    setEffect {
+                        HomeScreenContract.Effect.SnackbarClosureWarning
+                    }
+                }
+
+                is HomeScreenContract.Event.OnCloseApp -> {
+                    setEffect {
+                        HomeScreenContract.Effect.CloseApp
+                    }
+                }
             }
         }
     }

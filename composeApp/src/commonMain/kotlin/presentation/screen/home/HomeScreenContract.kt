@@ -28,11 +28,19 @@ object HomeScreenContract {
         data class FilterCurrencyList(
             val query: String
         ) : Event
+
+        data object OnShowSnackBarClosureWarning : Event
+
+        data object OnCloseApp : Event
     }
 
     sealed interface Effect : UiEffect {
 
         data object OpenCurrencyPickerDialog : Effect
+
+        data object SnackbarClosureWarning : Effect
+
+        data object CloseApp : Effect
     }
 
     data class State(
