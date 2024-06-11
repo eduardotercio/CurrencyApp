@@ -23,6 +23,7 @@ import domain.model.CurrencyType
 import kotlinx.coroutines.launch
 import presentation.animation.JsonAnimation
 import presentation.components.CurrencyPickerDialog
+import presentation.components.CustomSnackbar
 import presentation.components.HomeBody
 import presentation.components.HomeHeader
 import surfaceColor
@@ -114,6 +115,9 @@ fun HomeScreen() {
         snackbarHost = {
             SnackbarHost(
                 hostState = snackbarHostState,
+                snackbar = {
+                    CustomSnackbar(it)
+                }
             )
         }
     ) {

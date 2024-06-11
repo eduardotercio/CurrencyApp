@@ -90,3 +90,8 @@ val textColor
     @Composable
     get() = if (isSystemInDarkTheme()) Color(0xFFFFFFFF)
     else Color(0xFF000000)
+
+val snackbarColor
+    @Composable
+    get() = if (isSystemInDarkTheme()) Color.White.copy(alpha = 0.2f)
+    else headerColor.copy(alpha = 0.8f)
