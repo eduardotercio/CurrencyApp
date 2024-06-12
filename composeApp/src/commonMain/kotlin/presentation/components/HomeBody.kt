@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import currencyapptest.composeapp.generated.resources.Res
@@ -27,10 +28,9 @@ import presentation.screen.home.HomeScreenContract
 
 @Composable
 fun HomeBody(
-    state: HomeScreenContract.State,
-    amount: String
+    state: HomeScreenContract.State
 ) {
-    val convertedAmount = if (amount.isNotEmpty()) state.convertedAmount else 0.0
+    val convertedAmount = state.convertedAmount
 
     val currencyConverterAnimation = object : TwoWayConverter<Double, AnimationVector1D> {
         override val convertFromVector: (AnimationVector1D) -> Double = { vector ->
@@ -66,7 +66,9 @@ fun HomeBody(
                 fontSize = 60.sp,
                 fontFamily = FontFamily(Font(Res.font.bebas_nue_regular)),
                 color = if (isSystemInDarkTheme()) Color.White else Color.Black,
-                textAlign = TextAlign.Center
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
+                maxLines = 1
             )
         }
     }
