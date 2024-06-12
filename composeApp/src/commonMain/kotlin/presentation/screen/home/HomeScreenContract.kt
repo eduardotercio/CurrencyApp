@@ -20,7 +20,7 @@ object HomeScreenContract {
         ) : Event
 
         data class ConvertSourceToTargetCurrency(
-            val amount: String
+            val inputAmount: String
         ) : Event
 
         data object OnDialogOpened : Event
@@ -47,7 +47,6 @@ object HomeScreenContract {
         val isLoading: Boolean = true,
         val isRefreshEnabled: Boolean = false,
         val currentFormattedDate: String = "",
-        val typedAmount: Double = 100.0,
         val convertedAmount: Double = 0.0,
         val allCurrenciesList: List<Currency> = listOf(),
         val filteredCurrenciesList: List<Currency> = listOf(),

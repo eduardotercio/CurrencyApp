@@ -26,13 +26,14 @@ import presentation.components.CurrencyPickerDialog
 import presentation.components.CustomSnackbar
 import presentation.components.HomeBody
 import presentation.components.HomeHeader
+import presentation.screen.home.HomeScreenViewModel.Companion.DEFAULT_VALUE
 import surfaceColor
 import util.BackHandler
 import util.appActions
 import util.koinViewModel
 
-private const val DEFAULT_VALUE = "100.00"
 private const val DOT_CHAR = '.'
+private const val COMMA_CHAR = ','
 private const val MIN_CLICKS_TO_EXIT = 2
 
 @Composable
@@ -139,6 +140,7 @@ fun HomeScreen() {
             } else {
                 HomeHeader(
                     state = state,
+                    amount = amount,
                     sendEvent = { event ->
                         sendEvent(event)
                     },
@@ -146,16 +148,15 @@ fun HomeScreen() {
                         sendEvent(HomeScreenContract.Event.OnDialogOpened)
                         currencyType = it
                     },
-                    amount = amount,
                     onAmountValueChanged = { input ->
-                        if ((input.count { it == DOT_CHAR } <= 1))
-                            amount = input
-                        sendEvent(HomeScreenContract.Event.ConvertSourceToTargetCurrency(amount))
+                        if (input.count { it == DOT_CHAR || it == COMMA_CHAR } <= 1) {
+                            amount = input.replace(COMMA_CHAR, DOT_CHAR)
+                            sendEvent(HomeScreenContract.Event.ConvertSourceToTargetCurrency(amount))
+                        }
                     }
                 )
                 HomeBody(
-                    state = state,
-                    amount = amount
+                    state = state
                 )
             }
         }

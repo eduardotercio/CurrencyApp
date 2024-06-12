@@ -41,9 +41,9 @@ import staleColor
 @Composable
 fun HomeHeader(
     state: HomeScreenContract.State,
+    amount: String,
     sendEvent: (HomeScreenContract.Event) -> Unit,
     onCurrencyButtonClicked: (CurrencyType) -> Unit,
-    amount: String,
     onAmountValueChanged: (String) -> Unit
 ) {
     val source = state.sourceCurrency

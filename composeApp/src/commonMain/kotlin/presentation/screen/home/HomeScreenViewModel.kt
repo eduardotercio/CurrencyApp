@@ -5,6 +5,7 @@ import domain.model.Currency
 import domain.model.CurrencyType
 import domain.model.RequestState
 import domain.usecase.ConvertCurrenciesUseCase
+import domain.usecase.ConvertCurrenciesUseCaseImpl.Companion.ZERO_AMOUNT
 import domain.usecase.CurrentFormattedDateUseCase
 import domain.usecase.FilterListFromQueryUseCase
 import domain.usecase.GetSavedCurrencyCodeUseCase
@@ -13,6 +14,7 @@ import domain.usecase.SaveLastRequestTimeUseCase
 import domain.usecase.SaveLatestExchangeRatesUseCase
 import domain.usecase.SaveSelectedCurrencyUseCase
 import domain.usecase.TimeFromLastRequestUseCase
+import domain.usecase.TimeFromLastRequestUseCaseImpl.Companion.ONE_DAY
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -46,7 +48,7 @@ class HomeScreenViewModel(
                 getFormattedDate()
                 fetchNewRates()
                 checkIfCanRefresh()
-                debouncedConversion(currentState.typedAmount.toString())
+                debouncedConversion(DEFAULT_VALUE)
             }
 
             val remainingDelay = (2500 - executionTime.inWholeMilliseconds).coerceAtLeast(0)
@@ -89,7 +91,7 @@ class HomeScreenViewModel(
                 }
 
                 is HomeScreenContract.Event.ConvertSourceToTargetCurrency -> {
-                    debouncedConversion(event.amount)
+                    debouncedConversion(event.inputAmount)
                 }
 
                 is HomeScreenContract.Event.OnDialogOpened -> {
@@ -255,32 +257,33 @@ class HomeScreenViewModel(
         }
     }
 
-    private val debouncedConversion = scope.debounce<String> { amount ->
+    private val debouncedConversion = scope.debounce<String> { inputAmount ->
         viewModelScope.launch {
             with(currentState) {
-                if (amount.isNotEmpty() && amount.last() != DOT_CHAR) {
+                val convertedAmount = if (inputAmount.isEmpty()) {
+                    RequestState.Success(ZERO_AMOUNT)
+                } else {
                     val sourceCurrency = allCurrenciesList.find { it.code == sourceCurrency.name }
                     val targetCurrency = allCurrenciesList.find { it.code == targetCurrency.name }
-                    val convertedAmount = convertCurrenciesUseCase(
-                        amount = amount.toDouble(),
+                    convertCurrenciesUseCase(
+                        inputAmount = inputAmount,
                         sourceCurrency = sourceCurrency,
                         targetCurrency = targetCurrency
                     )
-
-                    withContext(Dispatchers.Main) {
-                        when (convertedAmount) {
-                            is RequestState.Success -> {
+                }
+                withContext(Dispatchers.Main) {
+                    when (convertedAmount) {
+                        is RequestState.Success -> {
+                            if (!convertedAmount.data.isNaN()) {
                                 setState {
                                     copy(
                                         convertedAmount = convertedAmount.data
                                     )
                                 }
                             }
-
-                            is RequestState.Error -> {
-
-                            }
                         }
+
+                        is RequestState.Error -> {}
                     }
                 }
             }
@@ -300,10 +303,8 @@ class HomeScreenViewModel(
         }
     }
 
-    private companion object {
-        const val ONE_DAY = 24L
-        const val HALF_DAY = 12L
-        const val DOT_CHAR = '.'
+    companion object {
+        private const val HALF_DAY = 12L
+        const val DEFAULT_VALUE = "1"
     }
-
 }

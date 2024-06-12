@@ -5,7 +5,7 @@ import domain.model.RequestState
 
 interface ConvertCurrenciesUseCase {
     suspend operator fun invoke(
-        amount: Double,
+        inputAmount: String,
         sourceCurrency: Currency?,
         targetCurrency: Currency?
     ): RequestState<Double>

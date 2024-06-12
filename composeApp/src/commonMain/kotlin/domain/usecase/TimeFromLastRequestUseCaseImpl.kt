@@ -26,8 +26,8 @@ class TimeFromLastRequestUseCaseImpl(
         }
     }
 
-    private companion object {
+    companion object {
         const val ONE_DAY = 24L
-        const val ZERO = 0L
+        private const val ZERO = 0L
     }
 }

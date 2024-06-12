@@ -53,6 +53,8 @@ import domain.model.CurrencyCode
 import org.jetbrains.compose.resources.painterResource
 import presentation.screen.home.HomeScreenContract
 
+private const val CHAR_INPUT_LIMIT = 15
+
 @Composable
 fun CurrencyDisplayButton(
     modifier: Modifier = Modifier,
@@ -172,7 +174,8 @@ fun InputValueButton(
             .animateContentSize(),
         value = amount,
         onValueChange = { newValue ->
-            onValueChanged(newValue)
+            if (newValue.length <= CHAR_INPUT_LIMIT)
+                onValueChanged(newValue)
         },
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.White.copy(alpha = 0.05f),
