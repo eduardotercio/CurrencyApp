@@ -30,13 +30,11 @@ class CurrencyRepositoryImpl(
 
     private suspend fun getExchangeRatesFromApi(): RequestState<DataResponse> =
         withContext(Dispatchers.IO) {
-            println("Repository: ExchangeRatesFromApi")
             currencyApi.getLatestExchangeRates()
         }
 
     private suspend fun getExchangeRatesFromLocal(): RequestState<DataResponse> =
         withContext(Dispatchers.IO) {
-            println("Repository: ExchangeRatesFromLocal")
             mongoDb.readCurrencies().first()
         }
 
