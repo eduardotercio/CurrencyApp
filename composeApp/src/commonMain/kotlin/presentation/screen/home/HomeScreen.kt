@@ -150,7 +150,7 @@ fun HomeScreen() {
                     },
                     onAmountValueChanged = { input ->
                         if (input.count { it == DOT_CHAR || it == COMMA_CHAR } <= 1) {
-                            amount = input
+                            amount = input.replace(COMMA_CHAR, DOT_CHAR)
                             sendEvent(HomeScreenContract.Event.ConvertSourceToTargetCurrency(amount))
                         }
                     }

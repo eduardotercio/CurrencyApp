@@ -305,6 +305,6 @@ class HomeScreenViewModel(
 
     companion object {
         private const val HALF_DAY = 12L
-        const val DEFAULT_VALUE = "1.0"
+        const val DEFAULT_VALUE = "1"
     }
 }

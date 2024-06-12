@@ -25,6 +25,7 @@ import currencyapptest.composeapp.generated.resources.Res
 import currencyapptest.composeapp.generated.resources.bebas_nue_regular
 import org.jetbrains.compose.resources.Font
 import presentation.screen.home.HomeScreenContract
+import util.formatCurrency
 
 @Composable
 fun HomeBody(
@@ -62,7 +63,7 @@ fun HomeBody(
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = "${(animatedExchangeAmount * 100).toLong() / 100.0}",
+                text = "${(animatedExchangeAmount * 100).toLong() / 100.0}".formatCurrency(),
                 fontSize = 60.sp,
                 fontFamily = FontFamily(Font(Res.font.bebas_nue_regular)),
                 color = if (isSystemInDarkTheme()) Color.White else Color.Black,
