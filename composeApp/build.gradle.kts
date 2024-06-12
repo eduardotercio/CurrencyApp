@@ -44,7 +44,7 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.compose.ui.tooling.preview)
-
+            implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.android)
 
             implementation(libs.koin.android)
@@ -57,7 +57,6 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.activity.compose)
 
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
