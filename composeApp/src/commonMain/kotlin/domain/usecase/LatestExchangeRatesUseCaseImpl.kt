@@ -4,7 +4,6 @@ import domain.model.DataResponse
 import domain.model.RequestState
 import domain.repository.CurrencyRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
 class LatestExchangeRatesUseCaseImpl(
