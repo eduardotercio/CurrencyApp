@@ -11,7 +11,7 @@ class TimeFromLastRequestUseCaseImpl(
     private val repository: CurrencyRepository
 ) : TimeFromLastRequestUseCase {
     override suspend fun invoke(): Long {
-        return withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.Default) {
             val lastRequestTimestamp = repository.getLastRequestTime()
             with(Dispatchers.Default) {
                 val currentTimestamp = getCurrentTimeInMillis()

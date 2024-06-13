@@ -11,7 +11,7 @@ class LatestExchangeRatesUseCaseImpl(
     private val repository: CurrencyRepository
 ) : LatestExchangeRatesUseCase {
     override suspend fun invoke(getFromLocal: Boolean): RequestState<DataResponse> {
-        return withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.Default) {
             repository.getLatestExchangeRates(getFromLocal)
         }
     }
