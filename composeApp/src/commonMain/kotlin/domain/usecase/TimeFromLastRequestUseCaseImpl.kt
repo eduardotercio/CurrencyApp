@@ -2,7 +2,6 @@ package domain.usecase
 
 import domain.repository.CurrencyRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 import util.getCurrentTimeInMillis
 import util.toInstant
@@ -13,16 +12,14 @@ class TimeFromLastRequestUseCaseImpl(
     override suspend fun invoke(): Long {
         return withContext(Dispatchers.Default) {
             val lastRequestTimestamp = repository.getLastRequestTime()
-            with(Dispatchers.Default) {
-                val currentTimestamp = getCurrentTimeInMillis()
+            val currentTimestamp = getCurrentTimeInMillis()
 
-                val lastInstant = toInstant(lastRequestTimestamp)
-                val currentInstant = toInstant(currentTimestamp)
+            val lastInstant = toInstant(lastRequestTimestamp)
+            val currentInstant = toInstant(currentTimestamp)
 
-                val hoursDifference = currentInstant.minus(lastInstant).inWholeHours
+            val hoursDifference = currentInstant.minus(lastInstant).inWholeHours
 
-                hoursDifference.takeIf { hoursDifference >= ZERO } ?: ONE_DAY
-            }
+            hoursDifference.takeIf { hoursDifference >= ZERO } ?: ONE_DAY
         }
     }
 
