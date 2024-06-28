@@ -21,7 +21,11 @@ class MongoDBServiceImpl : MongoDBService {
     override fun configureRealm() {
         if (realm == null || realm!!.isClosed()) {
             val config = RealmConfiguration
-                .Builder(schema = setOf(Currency::class))
+                .Builder(
+                    schema = setOf(
+                        Currency::class
+                    )
+                )
                 .compactOnLaunch()
                 .build()
             realm = Realm.open(config)
